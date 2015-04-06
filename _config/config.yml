@@ -1,0 +1,10 @@
+---
+Name: deploynaut-notifications
+After:
+  - '#deploynaut'
+---
+DNRoot:
+  extensions:
+    - DNRootNotificationsExtension
+  url_handlers:
+    'project/$Project/notifications': 'notifications'
