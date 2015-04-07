@@ -2,7 +2,8 @@
 class DNRootAlertsExtension extends Extension {
 
 	private static $allowed_actions = array(
-		'alerts'
+		'alerts',
+		'approvealert'
 	);
 
 	public function getCurrentProject() {
@@ -20,6 +21,35 @@ class DNRootAlertsExtension extends Extension {
 			'Project' => $project,
 			'CurrentProject' => $project,
 		))->renderWith(array('DNRoot_alerts', 'DNRoot'));
+	}
+
+	public function approvealert(SS_HTTPRequest $request) {
+		$project = $this->getCurrentProject();
+		if(!$project) {
+			return new SS_HTTPResponse("Project '" . Convert::raw2xml($request->latestParam('Project')) . "' not found.", 404);
+		}
+
+		return $this->owner->customise(array(
+			'Title' => 'Alert approval',
+			'Project' => $project,
+			'CurrentProject' => $project,
+		))->renderWith(array('DNRoot_approvealert', 'DNRoot'));
+	}
+
+	public function AlertApprovalForm() {
+		return new Form($this->owner, 'AlertApprovalForm', new FieldList(
+			new TextField('ProjectName', 'Project name', $this->getCurrentProject()->Name),
+			new TextField('AlertName', 'Alert name')
+		), new FieldList(
+			new FormAction('doAlertApprovalForm', 'Submit')
+		), new RequiredFields(array(
+			'ProjectName',
+			'AlertName'
+		)));
+	}
+
+	public function doAlertApprovalForm($data, $form, $request) {
+		var_dump($data);die;
 	}
 
 	/**

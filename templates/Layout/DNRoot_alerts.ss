@@ -6,6 +6,9 @@
 		<li<% if $IsActive %> class="active"<% end_if %>><a href="$Link">$Title</a></li>
 		<% end_loop %>
 	</ul>
+	<ul class="nav level-2">
+		<li><a href="naut/project/$CurrentProject.Name/approvealert">Alert approval form</a></li>
+	</ul>
 <% end_if %>
 
 <h3>Current alerts configured</h3>
@@ -31,15 +34,18 @@ Here's an example of what it looks like:</p>
 alerts:
   dev-check:
     url: "http://mysite.com/dev/check"
+    environment: "prod"
     contact-groups:
       - "a-group-in-silverstripe"
   homepage-check:
     url: "http://mysite.com"
+    environment: "prod"
     contact-groups:
       - "a-group-in-silverstripe"
       - "ops"
   alternate-homepage-check:
     url: "http://mysite.com"
+    environment: "prod"
     contacts:
       joe:
         name: "Joe Bloggs"
@@ -63,6 +69,6 @@ These groups are available to use:
 <p>Once the <code>alerts.yml</code> file is in place, and you deploy the change to an environment, the alerts will be configured according to those settings.</p>
 
 <p>Any changes to the <code>alerts.yml</code> file on subsequent deploys will update the effective alerts.
-The only exception is any configured alerts using "ops" as a group notification, then SilverStripe Operations will need to review the change before the notification can become effective. You will need to submit a new request to the <a href="approve-alert">notification approval form</a>.</p>
+The only exception is any configured alerts using "ops" as a <code>contact-groups</code> recipient will need approval by SilverStripe Operations before the notification can become effective. You will need to submit a new request to the <a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a> after your alert has been committed.</p>
 
 <p>To remove a notification, delete the entry from your <code>alerts.yml</code> and re-deploy.</p>
