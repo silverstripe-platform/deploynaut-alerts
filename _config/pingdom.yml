@@ -1,0 +1,10 @@
+---
+name: deploynaut-notifications
+---
+Injector:
+  PingdomService:
+    class: PingdomService
+
+PingdomGateway:
+    dependencies:
+        pingdom: %$PingdomService
