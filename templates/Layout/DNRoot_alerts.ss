@@ -11,23 +11,19 @@
 	</ul>
 <% end_if %>
 
-<h3>Current alerts configured</h3>
+<h3>Alerts</h3>
 
 <% if $HasAlertsConfigured %>
-<ul>
-	<li>Not done yet</li>
-</ul>
-<% else %>
-	<p>No alerts configured.</p>
+<h4>Currently configured alerts</h4>
+$AlertsConfigContent
 <% end_if %>
 
-<h3>Configuring alerts</h3>
+<h4>Instructions for configuring alerts</h4>
 
-<p>This section allows you to configure which alerts should be configured, so that alerts are sent when a check fails.
-A check is a URL that is monitored every few minutes for a bad HTTP status in the 5xx range. If the check fails, a notification
-is sent to the configured recipient contacts.</p>
+<p>Alerts are check against configured endpoints of a site that are periodically checked by an external service to ensure
+a healthy response of 200. If a check fails by returning a bad HTTP status in the 5xx range, then an alert will be sent to configured recipients.</p>
 
-<p>To configure alerts, place a <code>alerts.yml</code> in the <code>_config</code> directory in the root of your site code.
+<p>Alerts are configured by placing a YAML file <code>alerts.yml</code> in the <code>_config</code> directory of your site code.
 Here's an example of what it looks like:</p>
 
 <pre>
@@ -57,8 +53,10 @@ alerts:
         sms: "+64123456789"
 </pre>
 
-You can use either <code>contacts</code> to specify individual recipients, or <code>contact-groups</code> for entire Deploynaut groups containing recipients.<br>
-These groups are available to use:
+<p>Once the file is in place, you can deploy the code and the alerts will be configured at the end of a deployment.</p>
+
+<p>You can use either <code>contacts</code> to specify individual recipients, or <code>contact-groups</code> for entire Deploynaut groups containing recipients.<br>
+These groups are available to use on this project:</p>
 
 <ul>
 <% loop $AvailableGroups %>
@@ -66,9 +64,7 @@ These groups are available to use:
 <% end_loop %>
 </ul>
 
-<p>Once the <code>alerts.yml</code> file is in place, and you deploy the change to an environment, the alerts will be configured according to those settings.</p>
-
 <p>Any changes to the <code>alerts.yml</code> file on subsequent deploys will update the effective alerts.
-The only exception is any configured alerts using "ops" as a <code>contact-groups</code> recipient will need approval by SilverStripe Operations before the notification can become effective. You will need to submit a new request to the <a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a> after your alert has been committed.</p>
+The only exception is any configured alerts using "ops" as a <code>contact-groups</code> recipient will need approval by SilverStripe Operations before the alert is effective. You will need to submit a new request to the <a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a> after your alert has been committed.</p>
 
 <p>To remove a notification, delete the entry from your <code>alerts.yml</code> and re-deploy.</p>
