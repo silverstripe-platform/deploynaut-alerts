@@ -21,10 +21,9 @@ class PingdomServiceTest extends SapphireTest {
 
 	public function testGetUsers() {
 		$gw = Injector::inst()->get('PingdomGateway');
-		$contacts = $gw->getContacts();
+		$contacts = $gw->getNotificationContacts();
 		$this->assertInternalType('array', $contacts);
 		$this->assertEquals(count($contacts), 1, 'there should be one contact from getAllContacts()');
-		$this->assertEquals($contacts[0]->type, 'Notification contact', "the contacts 'type' should be 'Notification contact'");
 	}
 
 	public function testAddContact() {
@@ -38,7 +37,7 @@ class PingdomServiceTest extends SapphireTest {
 
 		$gw->addOrModifyContact($contact);
 
-		$contacts = $gw->getContacts();
+		$contacts = $gw->getNotificationContacts();
 		$this->assertEquals(count($contacts), 2, 'there should be two contacts in pingdom');
 		$this->assertEquals($contacts[1]->email, $contact['email']);
 		$this->assertEquals($contacts[1]->name, $contact['name']);
@@ -65,7 +64,7 @@ class PingdomServiceTest extends SapphireTest {
 		);
 
 		$gw->addOrModifyContact($contact);
-		$contacts = $gw->getContacts();
+		$contacts = $gw->getNotificationContacts();
 		$this->assertEquals(count($contacts), 2, 'there should be two contacts in pingdom');
 		$this->assertEquals($contacts[1]->email, $contact['email']);
 		$this->assertEquals($contacts[1]->name, $contact['email']);
@@ -83,16 +82,12 @@ class PingdomServiceTest extends SapphireTest {
 
 		$gw->addOrModifyContact($contact);
 
-		$contacts = $gw->getContacts();
+		$contacts = $gw->getNotificationContacts();
 		$this->assertEquals(count($contacts), 1, 'there should be one contact in pingdom');
 		$this->assertEquals($contacts[0]->email, $contact['email']);
 		$this->assertEquals($contacts[0]->name, $contact['name']);
 		$this->assertEquals($contacts[0]->cellphone, $contact['cellphone']);
 	}
-
-
-
-
 }
 
 class PingdomServiceMock implements TestOnly {
@@ -105,26 +100,14 @@ class PingdomServiceMock implements TestOnly {
 	/**
 	 * @return array
 	 */
-	public function getContacts() {
+	public function getNotificationContacts() {
 
 		if(!$this->contacts) {
 			$first = new stdClass();
-			$first->id = 10771596;
-			$first->name = "Stig Lindqvist (c)";
 			$first->email = "stig@silverstripe.com";
-			$first->cellphone = "64-221568043";
-			$first->countryiso = "NZ";
-			$first->defaultsmsprovider = "nexmo";
-			$first->directtwitter = false;
-			$first->paused = false;
-			$first->type = 'Notification contact';
-
-			$second = new stdClass();
-			$second->email = "stig@silverstripe.com";
-			$second->id = 578657;
-			$second->name = 'Stig Lindqvist (u)';
-			$second->type = 'User';
-			$this->contacts = array($first, $second);
+			$first->id = 578657;
+			$first->name = 'Stig Lindqvist (u)';
+			$this->contacts = array($first);
 		}
 
 		return $this->contacts;
@@ -134,7 +117,7 @@ class PingdomServiceMock implements TestOnly {
 	 * @param array $contact
 	 * @return bool
 	 */
-	public function addContact(array $contact) {
+	public function addNotificationContact(array $contact) {
 		$stdContact = new stdClass();
 		$stdContact->id = mt_rand(10000000, 100000000);
 		$stdContact->name = $contact['name'];
@@ -142,7 +125,6 @@ class PingdomServiceMock implements TestOnly {
 		$stdContact->cellphone = $contact['cellphone'];
 		$stdContact->countryiso = "NZ";
 		$stdContact->defaultsmsprovider = "nexmo";
-		$stdContact->type = 'Notification contact';
 		$this->contacts[] = $stdContact;
 		return true;
 	}
@@ -152,8 +134,8 @@ class PingdomServiceMock implements TestOnly {
 	 * @param array $contact
 	 * @return bool
 	 */
-	public function modifyContact($id, array $contact) {
-		$existingContacts = $this->getContacts();
+	public function modifyNotificationContact($id, array $contact) {
+		$existingContacts = $this->getNotificationContacts();
 		foreach($existingContacts as $key => $existingContact) {
 			if($existingContact->id == $id) {
 				$existingContacts[$key]->name = $contact['name'];

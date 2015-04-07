@@ -10,25 +10,20 @@ class PingdomGateway extends Object {
 	);
 
 	/**
-	 * @var PingdomService
+	 * @var \Acquia\Pingdom\PingdomApi
 	 */
 	public $pingdom;
 
 	/**
+	 * @var \Acquia\Pingdom\PingdomApi
+	 */
+	protected $api = null;
+
+	/**
 	 * @return array
 	 */
-	public function getContacts() {
-		$allUsers = $this->pingdom->getContacts();
-
-		$contacts = array();
-
-		foreach($allUsers as $user) {
-			if($user->type != 'Notification contact') {
-				continue;
-			}
-			$contacts[] = $user;
-		}
-		return $contacts;
+	public function getNotificationContacts() {
+		return $this->pingdom->getNotificationContacts();
 	}
 
 	/**
@@ -51,16 +46,30 @@ class PingdomGateway extends Object {
 			$contact['name'] = $contact['email'];
 		}
 
-		$existingContacts = $this->getContacts();
+		$existingContacts = $this->getNotificationContacts();
 
 		$updateId = null;
 		foreach($existingContacts as $existingContact) {
 			if($existingContact->email == $contact['email']) {
-				return $this->pingdom->modifyContact($existingContact->id, $contact);
+				return $this->pingdom->modifyNotificationContact($existingContact->id, $contact);
 			}
 		}
+		return $this->pingdom->addNotificationContact($contact);
+	}
 
-		return $this->pingdom->addContact($contact);
+	/**
+	 * @return array
+	 */
+	public function getChecks() {
+		return $this->pingdom->getChecks();
+	}
+
+	/**
+	 * @param $id
+	 * @return stdClass
+	 */
+	public function getCheck($id) {
+		return $this->pingdom->getCheck($id);
 	}
 
 }

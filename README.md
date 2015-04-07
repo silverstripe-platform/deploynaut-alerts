@@ -5,13 +5,16 @@
 `mysites/_config/pindom.yaml
 
 	---
-	Name: mypingdom
+	Name: my_pingdom
 	After:
-	- '#pingdom'
+	  - '#pingdom'
 	---
-	PingdomService:
-	  username: 'user@domain.com'
-	  password: 'password'
-	  token: 'api_token'
+	Injector:
+      PingdomService:
+        class: "\Acquia\Pingdom\PingdomApi"
+        constructor:
+          0: 'user@domain.com'
+          1: 'password'
+          2: 'token'
 
 

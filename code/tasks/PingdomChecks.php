@@ -13,16 +13,16 @@ class PingdomChecks extends BuildTask {
 		$gw = Injector::inst()->get('PingdomGateway');
 
 		$contact = array(
-			'name' => 'Updated Name',
-			'email' => 'stig@silverstripe.com',
-			'cellphone' => '64-221000001',
-			'countrycode' => 'NZ-64',
+			'name' => 'Stig Lindqvist',
+			'email' => 'stig2@silverstripe.com',
+			'cellphone' => '221000001',
+			'countrycode' => '64',
 			'countryiso' => 'NZ',
 		);
 
-//		$gw->addOrModifyContact($contact);
+		$gw->addOrModifyContact($contact);
 
-		$contacts = $gw->getContacts();
+		$contacts = $gw->getNotificationContacts();
 
 		foreach($contacts as $contact) {
 			echo $contact->id.' | ';
@@ -30,18 +30,16 @@ class PingdomChecks extends BuildTask {
 			echo $contact->email.' | ';
 			echo (!empty($contact->cellphone)?$contact->cellphone:'----------').' | ';
 			echo $contact->countryiso.' | ';
-			echo $contact->type;
 			echo PHP_EOL;
 		}
 
-
 		echo count($contacts).' contacts'.PHP_EOL;
 
-//		$checks = $pingdom->getChecks();
-//		foreach($checks as $check) {
-//			$check = $pingdom->getCheck($check->id);
-//			var_dump($check);
-//		}
+		$checks = $gw->getChecks();
+		foreach($checks as $check) {
+			$check = $gw->getCheck($check->id);
+			var_dump($check);
+		}
 
 
 
