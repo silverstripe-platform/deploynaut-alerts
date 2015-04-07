@@ -34,7 +34,9 @@ class DNRootAlertsExtension extends Extension {
 	}
 
 	/**
-	 * Is the alerts.yml file been configured, in that it's accessible and returning some content?
+	 * Has the alerts.yml file been configured, in that it's accessible
+	 * and we can get the content of the file?
+	 *
 	 * @return boolean
 	 */
 	public function HasAlertsConfigured() {

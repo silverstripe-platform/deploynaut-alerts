@@ -22,23 +22,37 @@
 
 <p>This section allows you to configure which alerts should be configured, so that alerts are sent when a check fails.
 A check is a URL that is monitored every few minutes for a bad HTTP status in the 5xx range. If the check fails, a notification
-is sent to one or more people in a group in deploynaut.</p>
+is sent to the configured recipient contacts.</p>
 
-<p>There are two types of alerts:</p>
+<p>To configure alerts, place a <code>alerts.yml</code> in the <code>_config</code> directory in the root of your site code.
+Here's an example of what it looks like:</p>
 
-<ul>
-	<li>Checks created by the developer of the site, alerts go to the website team and any clients</li>
-	<li>Checks that concern the operations of the site that are important for website uptime, alerts and monitoring of the check go to the SilverStripe Operations team</li>
-</ul>
+<pre>
+alerts:
+  dev-check:
+    url: "http://mysite.com/dev/check"
+    contact-groups:
+      - "a-group-in-silverstripe"
+  homepage-check:
+    url: "http://mysite.com"
+    contact-groups:
+      - "a-group-in-silverstripe"
+      - "ops"
+  alternate-homepage-check:
+    url: "http://mysite.com"
+    contacts:
+      joe:
+        name: "Joe Bloggs"
+        email: "joe@mysite.com"
+        sms: "+64123456789"
+      jane:
+        name: "Jane Bloggs"
+        email: "jane@mysite.com"
+        sms: "+64123456789"
+</pre>
 
-<p>To configure alerts, place a <code>alerts.yml</code> in the <code>_config</code> directory in the root of your site.</p>
-
-<p>Here is an example:</p>
-
-```
-```
-
-<p>These group codes are available to use in your <code>alerts.yml</code>:</p>
+You can use either <code>contacts</code> to specify individual recipients, or <code>contact-groups</code> for entire Deploynaut groups containing recipients.<br>
+These groups are available to use:
 
 <ul>
 <% loop $AvailableGroups %>
@@ -46,9 +60,9 @@ is sent to one or more people in a group in deploynaut.</p>
 <% end_loop %>
 </ul>
 
-<p>Once in place, and you deploy the change to the environment, alerts will be configured according to these settings.</p>
+<p>Once the <code>alerts.yml</code> file is in place, and you deploy the change to an environment, the alerts will be configured according to those settings.</p>
 
-<p>Any changes to the `alerts.yml` file on subsequent deploys will update the effective alerts.
-The only exception to that is if any alerts that concern the operation of the site using “ops” as a group notification, then SilverStripe Operations will need to review the change before the notification can become effective. You will need to submit a new request to the [notification approval form]().</p>
+<p>Any changes to the <code>alerts.yml</code> file on subsequent deploys will update the effective alerts.
+The only exception is any configured alerts using "ops" as a group notification, then SilverStripe Operations will need to review the change before the notification can become effective. You will need to submit a new request to the <a href="approve-alert">notification approval form</a>.</p>
 
 <p>To remove a notification, delete the entry from your <code>alerts.yml</code> and re-deploy.</p>
