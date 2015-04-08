@@ -11,6 +11,6 @@
 	</ul>
 <% end_if %>
 
-<p>You can use this form to approve an alert that has been configured with "ops" as a recipient.</p>
+<p>You can use this form to request approval for an alert that has been configured with "ops" as a contact.</p>
 
 $AlertApprovalForm
