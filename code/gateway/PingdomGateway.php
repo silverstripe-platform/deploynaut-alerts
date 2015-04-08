@@ -38,15 +38,12 @@ class PingdomGateway extends Object {
 			throw new \RuntimeException("notification contact must have an email set");
 		}
 
-		if(!isset($contact['cellphone'])) {
-			$contact['cellphone'] = '';
-		}
-
 		if(!isset($contact['name'])) {
 			$contact['name'] = $contact['email'];
 		}
 
 		$existingContacts = $this->getNotificationContacts();
+
 
 		$updateId = null;
 		foreach($existingContacts as $existingContact) {
