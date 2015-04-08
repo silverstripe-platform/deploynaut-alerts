@@ -81,7 +81,7 @@ class DNRootAlertsExtension extends Extension {
 	}
 
 	/**
-	 * Output the raw content of the alerts.yml file from a bare repository.
+	 * Output the raw content of the alerts.yml file from HEAD of a bare repository.
 	 * @return null|string
 	 */
 	public function AlertsConfigContent() {
@@ -101,39 +101,6 @@ class DNRootAlertsExtension extends Extension {
 		$output = $this->AlertsConfigContent();
 		if(!$output) return false;
 		return true;
-	}
-
-	/**
-	 * List all {@link Group} that are available to use in the current project.
-	 * @return ArrayList
-	 */
-	public function AvailableGroups() {
-		$list = new ArrayList();
-		$project = $this->getCurrentProject();
-
-		foreach($project->Viewers() as $viewerGroup) {
-			$list->push($viewerGroup);
-		}
-
-		foreach($project->DNEnvironmentList() as $env) {
-			$fields = $env->many_many();
-			foreach($fields as $field => $class) {
-				if($class != 'Group') continue;
-				foreach($env->$field() as $envGroup) {
-					$list->push($envGroup);
-				}
-			}
-		}
-
-		// the "ops" group isn't actually a group, but is still a valid option
-		// to use in alerts.yml as it's a special case to use "ops" as a group
-		$list->push(new ArrayData(array(
-			'Code' => 'ops'
-		)));
-
-		$list->removeDuplicates();
-
-		return $list;
 	}
 
 }
