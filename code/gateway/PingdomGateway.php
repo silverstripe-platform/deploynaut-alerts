@@ -102,6 +102,11 @@ class PingdomGateway extends Object {
 		return $this->pingdom->getCheck($id);
 	}
 
+	/**
+	 * @param int $checkId
+	 * @param array $parameters
+	 * @return string
+	 */
 	public function modifyCheck($checkId, $parameters) {
 		return $this->pingdom->modifyCheck($checkId, $parameters);
 	}
@@ -111,8 +116,9 @@ class PingdomGateway extends Object {
 	 * @param string $url - http(s)://www.silverstripe.com/test-url
 	 * @param array $users - array('email@silverstripe.com' => 'user name')
 	 * @param int $resolution - 1, 5, 15, 30, 60 mins
+	 * @param bool $pause - set to true to pause this check
 	 */
-	public function addOrModifyAlert($url, $users, $resolution = 5) {
+	public function addOrModifyAlert($url, $users, $resolution = 5, $pause=false) {
 		//@todo, implement
 	}
 
