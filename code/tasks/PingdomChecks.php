@@ -25,24 +25,34 @@ class PingdomChecks extends BuildTask {
 		$contacts = $gw->getNotificationContacts();
 
 		foreach($contacts as $contact) {
-			echo $contact->id.' | ';
-			echo $contact->name.' | ';
-			echo $contact->email.' | ';
-			echo (!empty($contact->cellphone)?$contact->cellphone:'----------').' | ';
-			echo $contact->countryiso.' | ';
+			echo $contact->id . ' | ';
+			echo $contact->name . ' | ';
+			echo $contact->email . ' | ';
+			echo ( !empty($contact->cellphone) ? $contact->cellphone : '----------' ).' | ';
+			echo $contact->countryiso . ' | ';
 			echo PHP_EOL;
 		}
 
-		echo count($contacts).' contacts'.PHP_EOL;
+		echo count($contacts) . ' contacts' . PHP_EOL;
 
-		$checks = $gw->getChecks();
-		foreach($checks as $check) {
-			$check = $gw->getCheck($check->id);
-			var_dump($check);
+		$gw->removeNotificationContact('stig2@silverstripe.com');
+
+		$contacts = $gw->getNotificationContacts();
+
+		foreach($contacts as $contact) {
+			echo $contact->id . ' | ';
+			echo $contact->name . ' | ';
+			echo $contact->email . ' | ';
+			echo ( !empty($contact->cellphone) ? $contact->cellphone : '----------' ).' | ';
+			echo $contact->countryiso . ' | ';
+			echo PHP_EOL;
 		}
 
-
-
+		//		$checks = $gw->getChecks();
+//		foreach($checks as $check) {
+//			$check = $gw->getCheck($check->id);
+//			var_dump($check);
+//		}
 	}
 
 	function createCheck($pingdom) {

@@ -55,6 +55,20 @@ class PingdomGateway extends Object {
 	}
 
 	/**
+	 * @param $email
+	 * @return bool|string
+	 */
+	public function removeNotificationContact($email) {
+		$existingContacts = $this->getNotificationContacts();
+		foreach($existingContacts as $existingContact) {
+			if($existingContact->email == $email) {
+				return $this->pingdom->removeNotificationContact($existingContact->id);
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function getChecks() {
