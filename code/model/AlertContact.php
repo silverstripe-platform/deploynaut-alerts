@@ -2,6 +2,7 @@
 class AlertContact extends DataObject {
 
 	private static $db = array(
+		'Name' => 'Varchar(255)',
 		'Email' => 'Varchar(255)',
 		'SMS' => 'Varchar(100)'
 	);
@@ -11,6 +12,7 @@ class AlertContact extends DataObject {
 	);
 
 	private static $summary_fields = array(
+		'Name' => 'Name',
 		'Email' => 'Email'
 	);
 
