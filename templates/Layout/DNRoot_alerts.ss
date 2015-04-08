@@ -39,7 +39,7 @@ alerts:
       - "ops"
 </pre>
 
-<p>Once the file is in place, you can deploy the code and the alerts will be configured at the end of a deployment.</p>
+<p>Once the file is committed, you can deploy the code and the alerts will be configured at the end of the deployment.</p>
 <p>These <code>contacts</code> are available to be used for this project:</p>
 
 <ul>
