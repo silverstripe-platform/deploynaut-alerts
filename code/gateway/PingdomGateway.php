@@ -27,6 +27,25 @@ class PingdomGateway extends Object {
 	}
 
 	/**
+	 * Returns a full check URL from a raw Pingdom check output
+	 *
+	 * @param $check
+	 * @return string
+	 */
+	public function getCheckURL($check) {
+		if(!property_exists($check->type, 'http')) {
+			return 'not a http check';
+		}
+		$data = $check->type->http;
+		$proto = ($data->encryption)?'https://':'http://';
+		$domain = $check->hostname;
+		$url = $data->url;
+
+		return $proto.$domain.$url;
+
+	}
+
+	/**
 	 * $contact must have an email address in $contact['email']
 	 *
 	 * @param array $contact
@@ -81,6 +100,40 @@ class PingdomGateway extends Object {
 	 */
 	public function getCheck($id) {
 		return $this->pingdom->getCheck($id);
+	}
+
+	public function modifyCheck($checkId, $parameters) {
+		return $this->pingdom->modifyCheck($checkId, $parameters);
+	}
+
+	/**
+	 *
+	 * @param string $url - http(s)://www.silverstripe.com/test-url
+	 * @param array $users - array('email@silverstripe.com' => 'user name')
+	 * @param int $resolution - 1, 5, 15, 30, 60 mins
+	 */
+	public function addOrModifyAlert($url, $users, $resolution = 5) {
+		//@todo, implement
+	}
+
+	/**
+	 * @param string $url
+	 * @return array
+	 */
+	public function paramsFromURL($url) {
+		$pattern = "|^(https?)://([^/]*)(.*)$|";
+
+		preg_match($pattern, trim($url), $matches);
+
+		if(count($matches) != 4) {
+			return array();
+		}
+
+		return array(
+			"name" => $matches[2],
+			"url" => $matches[3],
+			"encryption" => ($matches[1] == 'https')?true:false,
+		);
 	}
 
 }

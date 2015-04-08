@@ -126,4 +126,42 @@ class PingdomGatewayTest extends SapphireTest {
 
 		PingdomGateway::create()->addOrModifyContact($contact);
 	}
+
+	public function testParamsFromURL() {
+		$pw = PingdomGateway::create();
+
+		$this->assertEquals($pw ->paramsFromURL("https://test.com/endpoint"), array(
+			"name" => "test.com",
+			"url" => '/endpoint',
+			"encryption" => true,
+		));
+
+		$this->assertEquals($pw->paramsFromURL("http://test.nu/endpoint2"), array(
+			"name" => "test.nu",
+			"url" => '/endpoint2',
+			"encryption" => false,
+		));
+
+		$this->assertEquals($pw->paramsFromURL("https://test.net/"), array(
+			"name" => "test.net",
+			"url" => '/',
+			"encryption" => true,
+		));
+
+		$this->assertEquals($pw->paramsFromURL("https://test.net/"),  array(
+			"name" => "test.net",
+			"url" => '/',
+			"encryption" => true,
+		));
+
+		$this->assertEquals($pw->paramsFromURL("ftp://test.net/"), array());
+
+		$this->assertEquals($pw->paramsFromURL("laosdlasdo"), array());
+
+		$this->assertEquals($pw->paramsFromURL("http://test.com/hello?test"), array(
+			"name" => "test.com",
+			"url" => '/hello?test',
+			"encryption" => false
+		));
+	}
 }
