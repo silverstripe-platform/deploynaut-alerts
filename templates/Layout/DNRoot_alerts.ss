@@ -18,7 +18,7 @@
 $AlertsConfigContent
 <% end_if %>
 
-<h4>Instructions for configuring alerts</h4>
+<h4>Configuring alerts</h4>
 
 <p>Alerts are sent when a check against an <a href="https://github.com/silverstripe-labs/silverstripe-environmentcheck/">environmentcheck module suite</a> fails with a bad HTTP response status.
 You configure these checks by placing a YAML file <code>alerts.yml</code> in the <code>_config</code> directory of your site code. Here's an example of what it looks like:</p>
@@ -40,7 +40,10 @@ alerts:
 </pre>
 
 <p>Once the file is committed, you can deploy the code and the alerts will be configured at the end of the deployment.</p>
-<p>These <code>contacts</code> are available to be used for this project:</p>
+
+<h4>Possible values to use in configuration</h4>
+
+<p>These <code>contacts</code> are available:</p>
 
 <ul>
 <% loop $CurrentProject.AlertContacts %>
@@ -49,8 +52,23 @@ alerts:
 	<li>ops</li>
 </ul>
 
-<p>Any changes to the <code>alerts.yml</code> file on subsequent deploys will update the effective alerts.
-The only exception is any configured alerts using "ops" as a <code>contacts</code> recipient will need approval by SilverStripe Operations before the alert is effective.
-You will need to submit a new request to the <a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a> after your alert has been committed.</p>
+<p>Please contact the <a href="http://helpdesk.silverstripe.com">SilverStripe Operations Team</a> if you would like to add another contact to the list above.</p>
 
-<p>To remove a notification, delete the entry from your <code>alerts.yml</code> and re-deploy.</p>
+<p>These <code>environment</code> values are available:</p>
+
+<ul>
+<% loop $CurrentProject.DNEnvironmentList %>
+	<li>$Name</li>
+<% end_loop %>
+</ul>
+
+<h4>Using "ops" as a contact</h4>
+
+<p>This is a special case so that developers can alert SilverStripe Operations Team when a check fails. This means if the alert is received by ops, they will look into the problem when the alert is received. This should be used only for critical checks that concern the uptime of the site.</p>
+
+<p>In order to use the ops contact and have it be effective, the check needs to be approved by the SilverStripe Operations Team. If you commit the check and deploy it, the check will be created but
+be paused by default. In order to get it started, please new request to the <a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a>.</p>
+
+<h4>Removing a check</h4>
+
+<p>Delete the entry from your <code>alerts.yml</code> and re-deploy.</p>
