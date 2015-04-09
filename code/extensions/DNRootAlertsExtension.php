@@ -80,27 +80,8 @@ class DNRootAlertsExtension extends Extension {
 		return $this->owner->redirectBack();
 	}
 
-	/**
-	 * Output the raw content of the alerts.yml file from HEAD of a bare repository.
-	 * @return null|string
-	 */
 	public function AlertsConfigContent() {
-		return shell_exec(sprintf(
-			'cd %s && git show --format=raw HEAD:_config/alerts.yml',
-			$this->getCurrentProject()->getLocalCVSPath()
-		));
-	}
-
-	/**
-	 * Has the alerts.yml file been configured, in that it's accessible
-	 * and we can get the content of the file?
-	 *
-	 * @return boolean
-	 */
-	public function HasAlertsConfigured() {
-		$output = $this->AlertsConfigContent();
-		if(!$output) return false;
-		return true;
+		return $this->service->getAlertsConfigContent();
 	}
 
 }

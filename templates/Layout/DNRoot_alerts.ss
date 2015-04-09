@@ -13,7 +13,7 @@
 
 <h3>Alerts</h3>
 
-<% if $HasAlertsConfigured %>
+<% if $AlertsConfigContent %>
 <h4>Currently configured alerts</h4>
 $AlertsConfigContent
 <% end_if %>
