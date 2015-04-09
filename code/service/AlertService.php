@@ -29,15 +29,15 @@ class AlertService {
 	 * @return boolean
 	 */
 	public function sync($project, $environment, $log) {
-		$config = $this->getAlertsConfigContent($project);
-		if(!$config) {
+		$content = $this->getAlertsConfigContent($project);
+		if(!$content) {
 			$log->write('Skipping alert configuration. No alerts.yml found in site code.');
 			return false;
 		}
 
 		// check if there's anything in the alerts.yml for this environment
-		$configArr = Yaml::parse($config);
-		if(!isset($configArr['alerts'])) {
+		$config = Yaml::parse($content);
+		if(!isset($config['alerts'])) {
 			$log->write('ERROR: Malformed alerts.yml. Missing "alerts" key.');
 			return false;
 		}
