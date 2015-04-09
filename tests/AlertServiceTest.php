@@ -47,8 +47,16 @@ class AlertServiceTest extends SapphireTest {
 		$project = $this->objFromFixture('DNProject', 'test-project');
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-uat');
 
+		$this->mockGateway->expects($this->once())
+			->method('addOrModifyAlert')
+			->with('http://mysite-uat.com/dev/check/check', array(
+				array('name' => 'Joe Bloggs', 'email' => 'joe@email.com', 'sms' => null),
+			), 5, false)
+			->will($this->returnValue(true));
+
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
 		$service->setGateway($this->mockGateway);
+
 		$result = $service->sync($project, $environment, $this->log);
 
 		$this->assertTrue($result);
@@ -62,6 +70,15 @@ class AlertServiceTest extends SapphireTest {
 	public function testGoodConfigConfiguresAlerts() {
 		$project = $this->objFromFixture('DNProject', 'test-project');
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
+
+		$this->mockGateway->expects($this->once())
+			->method('addOrModifyAlert')
+			->with('http://mysite.com/dev/check/health', array(
+				array('name' => 'Joe Bloggs', 'email' => 'joe@email.com', 'sms' => null),
+				array('name' => 'Jane Bloggs', 'email' => 'jane@email.com', 'sms' => null),
+				array('name' => 'SilverStripe Operations Team', 'email' => DEPLOYNAUT_OPS_EMAIL, 'sms' => null)
+			), 5, true)
+			->will($this->returnValue(true));
 
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
 		$service->setGateway($this->mockGateway);

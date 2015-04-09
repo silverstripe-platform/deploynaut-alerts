@@ -4,9 +4,11 @@ DNProject:
 DNEnvironment:
   test-environment-prod:
     Name: prod
+    URL: http://mysite.com
     Project: =>DNProject.test-project
   test-environment-uat:
     Name: uat
+    URL: http://mysite-uat.com
     Project: =>DNProject.test-project
 AlertContact:
   contact-joe:
