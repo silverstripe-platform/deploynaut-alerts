@@ -29,7 +29,7 @@ class AlertService {
 	 * @return boolean
 	 */
 	public function sync($project, $environment, $log) {
-		$config = $this->getAlertsConfigContent();
+		$config = $this->getAlertsConfigContent($project);
 		if(!$config) {
 			$log->write('Skipping alert configuration. No alerts.yml found in site code.');
 			return false;
@@ -62,17 +62,24 @@ class AlertService {
 			}
 
 			// validate that each value in the config is valid, build up a list of contacts we'll use later
-			$contacts = new ArrayList();
+			$contactsList = new ArrayList();
 			foreach($alertConfig['contacts'] as $contactEmail) {
-				if($contactEmail == 'ops') continue; // ignore the "ops" one, we handle that as a special case later
-
-				$contact = AlertContact::get()->filter('Email', $contactEmail)->first();
-				if(!($contact && $contact->exists())) {
-					$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail));
-					return false;
+				// special case for ops
+				if($contactEmail == 'ops') {
+					$contact = new ArrayData(array(
+						'Name' => 'SilverStripe Operations Team',
+						'Email' => DEPLOYNAUT_OPS_EMAIL,
+						'SMS' => null
+					));
+				} else {
+					$contact = AlertContact::get()->filter('Email', $contactEmail)->first();
+					if(!($contact && $contact->exists())) {
+						$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail));
+						return false;
+					}
 				}
 
-				$contacts->push($contact);
+				$contactsList->push($contact);
 			}
 
 			// validate the environment specified in the alert actually exists
@@ -83,13 +90,47 @@ class AlertService {
 
 			// the alert has an environment that matches the environment we're deploying to now. Configure the alerts.
 			if($alertConfig['environment'] == $environment->Name) {
-				$log->write(sprintf('Configuring alert "%s" for %s:%s from alerts.yml', $alertName, $project->Name, $environment->Name));
+				$log->write(sprintf('Configuring alert "%s" from alerts.yml', $alertName));
 			}
 
-			$url = sprintf('%s/dev/check/%s', $environment->URL, $alertConfig['envcheck-suite']);
+			$contacts = array();
+			$paused = false;
 
-			// todo: send the data to PingdomGateway
+			foreach($contactsList as $contact) {
+				// alerts that concern ops are not effective immediately, but paused until ops have approved the alert
+				if($contact == 'ops') {
+					$paused = true;
+				}
 
+				$contacts[] = array(
+					'name' => $contact->Name,
+					'email' => $contact->Email,
+					'sms' => $contact->SMS
+				);
+			}
+
+			$result = $this->gateway->addOrModifyAlert(
+				sprintf('%s/dev/check/%s', $environment->URL, $alertConfig['envcheck-suite']),
+				$contacts,
+				5, // the check interval in minutes
+				$paused
+			);
+
+			if(!$result) {
+				$log->write(sprintf('Failed to configure alert "%s"', $alertName));
+				return false;
+			}
+
+			if($paused) {
+				$log->write(sprintf(
+					'Sucessfully configured alert "%s", but has been disabled pending approval. Please contact SilverStripe Operations Team to have it approved',
+					$alertName
+				));
+			} else {
+				$log->write(sprintf('Successfully configured alert "%s"', $alertName));
+			}
+
+			return true;
 		}
 	}
 

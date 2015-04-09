@@ -7,6 +7,10 @@ class DNRootAlertsExtension extends Extension {
 		'AlertApprovalForm'
 	);
 
+	private static $dependencies = array(
+		'alertService' => '%$AlertService'
+	);
+
 	public function getCurrentProject() {
 		return $this->owner->DNProjectList()->filter('Name', $this->owner->getRequest()->latestParam('Project'))->first();
 	}
@@ -66,8 +70,8 @@ class DNRootAlertsExtension extends Extension {
 		}
 
 		$email = new Email();
-		$email->setFrom(DEPLOYNAUT_ALERTS_APPROVE_EMAIL_FROM);
-		$email->setTo(DEPLOYNAUT_ALERTS_APPROVE_EMAIL_TO);
+		$email->setFrom(DEPLOYNAUT_OPS_EMAIL_FROM);
+		$email->setTo(DEPLOYNAUT_OPS_EMAIL);
 		$email->setSubject('Deploynaut approve alert request');
 		$email->setTemplate('ApproveAlertEmail');
 		$email->populateTemplate($data);
@@ -81,7 +85,7 @@ class DNRootAlertsExtension extends Extension {
 	}
 
 	public function AlertsConfigContent() {
-		return $this->service->getAlertsConfigContent($this->getCurrentProject());
+		return $this->alertService->getAlertsConfigContent($this->getCurrentProject());
 	}
 
 }

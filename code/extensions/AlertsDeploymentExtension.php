@@ -1,6 +1,10 @@
 <?php
 class AlertsDeploymentExtension extends Extension {
 
+	private static $dependencies = array(
+		'alertService' => '%$AlertService'
+	);
+
 	/**
 	 * After a successful deployment, configure the Pingdom alerts
 	 * configured from the alerts.yml in the site code repository.
@@ -11,7 +15,7 @@ class AlertsDeploymentExtension extends Extension {
 	 * @param DNProject $project
 	 */
 	public function deployEnd($environment, $sha, $log, $project) {
-		Injector::inst()->get('AlertService')->sync($environment, $log);
+		$this->alertService->sync($project, $environment, $log);
 	}
 
 }
