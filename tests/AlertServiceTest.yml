@@ -1,0 +1,17 @@
+DNProject:
+  test-project:
+    Name: test-project
+DNEnvironment:
+  test-environment-prod:
+    Name: prod
+    Project: =>DNProject.test-project
+  test-environment-uat:
+    Name: uat
+    Project: =>DNProject.test-project
+AlertContact:
+  contact-joe:
+    Name: Joe Bloggs
+    Email: joe@email.com
+  contact-jane:
+    Name: Jane Bloggs
+    Email: jane@email.com

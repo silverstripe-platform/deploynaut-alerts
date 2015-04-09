@@ -1,0 +1,13 @@
+alerts:
+  dev-check:
+    envcheck-suite: "check"
+    environment: "uat"
+    contacts:
+      - "joe@email.com"
+  health-check:
+    envcheck-suite: "health"
+    environment: "prod"
+    contacts:
+      - "joe@email.com"
+      - "jane@email.com"
+      - "ops"

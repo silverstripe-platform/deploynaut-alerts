@@ -28,7 +28,7 @@ alerts:
   dev-check:
     envcheck-suite: "check"
     environment: "prod"
-    contact-groups:
+    contacts:
       - "joe@email.com"
   health-check:
     envcheck-suite: "health"

@@ -1,0 +1,5 @@
+alerts:
+  dev-check:
+    envcheck-suite: "check"
+    contacts:
+      - "joe@email.com"

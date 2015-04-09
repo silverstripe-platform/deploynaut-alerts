@@ -2,5 +2,5 @@
 name: deploynaut-notifications
 ---
 PingdomGateway:
-    dependencies:
-        pingdom: %$PingdomService
+  dependencies:
+    pingdom: %$PingdomService

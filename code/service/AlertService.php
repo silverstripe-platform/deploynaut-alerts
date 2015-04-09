@@ -67,6 +67,7 @@ class AlertService {
 				// special case for ops
 				if($contactEmail == 'ops') {
 					$contact = new ArrayData(array(
+						'IsOps' => true,
 						'Name' => 'SilverStripe Operations Team',
 						'Email' => DEPLOYNAUT_OPS_EMAIL,
 						'SMS' => null
@@ -74,7 +75,7 @@ class AlertService {
 				} else {
 					$contact = AlertContact::get()->filter('Email', $contactEmail)->first();
 					if(!($contact && $contact->exists())) {
-						$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail));
+						$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail, $alertName));
 						return false;
 					}
 				}
@@ -91,6 +92,16 @@ class AlertService {
 			// the alert has an environment that matches the environment we're deploying to now. Configure the alerts.
 			if($alertConfig['environment'] == $environment->Name) {
 				$log->write(sprintf('Configuring alert "%s" from alerts.yml', $alertName));
+			} else {
+				$log->write(sprintf(
+					'Skipping alert "%s" for environment "%s". Does not apply to this environment ("%s")',
+					$alertName,
+					$alertConfig['environment'],
+					$environment->Name
+				));
+
+				// skip to the next alert in the configuration
+				continue;
 			}
 
 			$contacts = array();
@@ -98,7 +109,7 @@ class AlertService {
 
 			foreach($contactsList as $contact) {
 				// alerts that concern ops are not effective immediately, but paused until ops have approved the alert
-				if($contact == 'ops') {
+				if($contact->IsOps) {
 					$paused = true;
 				}
 
@@ -123,15 +134,15 @@ class AlertService {
 
 			if($paused) {
 				$log->write(sprintf(
-					'Sucessfully configured alert "%s", but has been disabled pending approval. Please contact SilverStripe Operations Team to have it approved',
+					'Successfully configured alert "%s", but has been disabled pending approval. Please contact SilverStripe Operations Team to have it approved',
 					$alertName
 				));
 			} else {
 				$log->write(sprintf('Successfully configured alert "%s"', $alertName));
 			}
-
-			return true;
 		}
+
+		return true;
 	}
 
 }
