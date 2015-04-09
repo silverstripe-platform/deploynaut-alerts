@@ -11,7 +11,7 @@ class AlertsDeploymentExtension extends Extension {
 	 * @param DNProject $project
 	 */
 	public function deployEnd($environment, $sha, $log, $project) {
-		// todo
+		Injector::inst()->get('AlertService')->sync($environment, $log);
 	}
 
 }
