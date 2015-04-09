@@ -114,6 +114,14 @@ class AlertService {
 		return true;
 	}
 
+	/**
+	 * Validate a specific alert configuration from configuration YAML is correct.
+	 *
+	 * @param string $name
+	 * @param array $config
+	 * @param DeploynautLogFile $log
+	 * @return boolean
+	 */
 	public function validateAlert($name, $config, $log) {
 		// validate we have an environment set for the alert
 		if(!isset($config['environment'])) {
