@@ -81,7 +81,7 @@ class DNRootAlertsExtension extends Extension {
 	}
 
 	public function AlertsConfigContent() {
-		return $this->service->getAlertsConfigContent();
+		return $this->service->getAlertsConfigContent($this->getCurrentProject());
 	}
 
 }

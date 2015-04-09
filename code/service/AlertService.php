@@ -9,12 +9,13 @@ class AlertService {
 
 	/**
 	 * Output the raw content of the alerts.yml file from HEAD of a bare repository.
+	 * @param DNProject $project
 	 * @return null|string
 	 */
-	public function getAlertsConfigContent() {
+	public function getAlertsConfigContent($project) {
 		return shell_exec(sprintf(
 			'cd %s && git show --format=raw HEAD:_config/alerts.yml',
-			$this->getCurrentProject()->getLocalCVSPath()
+			$project->getLocalCVSPath()
 		));
 	}
 
