@@ -11,9 +11,6 @@ class AlertServiceTest extends SapphireTest {
 		parent::setUp();
 
 		$this->mockGateway = $this->getMock('PingdomGateway');
-		$this->mockGateway->expects($this->any())
-			->method('addOrModifyAlert')
-			->will($this->returnValue(true));
 
 		$logFile = 'test-logs';
 		touch(DEPLOYNAUT_LOG_PATH . '/' . $logFile);
@@ -26,10 +23,9 @@ class AlertServiceTest extends SapphireTest {
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
 
 		$service = Injector::inst()->create('SpyAlertServiceMissingEnvironmentConfig');
-		$result = $service->sync($project, $environment, $this->log);
+		$service->sync($project, $environment, $this->log);
 
-		$this->assertFalse($result);
-		$this->assertContains('ERROR: Malformed alerts.yml. Missing "environment" key for alert "dev-check"', $this->log->content());
+		$this->assertContains('ERROR: Misconfigured alerts.yml. Missing "environment" key for alert "dev-check"', $this->log->content());
 	}
 
 	public function testMissingAlertContact() {
@@ -37,9 +33,8 @@ class AlertServiceTest extends SapphireTest {
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
 
 		$service = Injector::inst()->create('SpyAlertServiceInvalidAlertContactConfig');
-		$result = $service->sync($project, $environment, $this->log);
+		$service->sync($project, $environment, $this->log);
 
-		$this->assertFalse($result);
 		$this->assertContains('ERROR: No such contact "nonexistant-contact@email.com" for alert "dev-check"', $this->log->content());
 	}
 
@@ -57,9 +52,7 @@ class AlertServiceTest extends SapphireTest {
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
 		$service->setGateway($this->mockGateway);
 
-		$result = $service->sync($project, $environment, $this->log);
-
-		$this->assertTrue($result);
+		$service->sync($project, $environment, $this->log);
 
 		$this->assertNotContains('Failed to configure alert "dev-check"', $this->log->content());
 		$this->assertNotContains('Failed to configure alert "health-check"', $this->log->content());
@@ -82,9 +75,8 @@ class AlertServiceTest extends SapphireTest {
 
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
 		$service->setGateway($this->mockGateway);
-		$result = $service->sync($project, $environment, $this->log);
 
-		$this->assertTrue($result);
+		$service->sync($project, $environment, $this->log);
 
 		$this->assertNotContains('Failed to configure alert "health-check"', $this->log->content());
 		$this->assertNotContains('Failed to configure alert "dev-check"', $this->log->content());
@@ -92,12 +84,71 @@ class AlertServiceTest extends SapphireTest {
 		$this->assertContains('Successfully configured alert "health-check", but has been disabled pending approval. Please contact SilverStripe Operations Team to have it approved', $this->log->content());
 	}
 
+	public function testNoConfig() {
+		$project = $this->objFromFixture('DNProject', 'test-project');
+		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
+
+		$service = Injector::inst()->create('TestAlertService');
+		$service->setGateway($this->mockGateway);
+
+		$result = $service->sync($project, $environment, $this->log);
+
+		$this->assertFalse($result);
+		$this->assertContains('Skipping alert configuration. No alerts.yml found in site code', $this->log->content());
+	}
+
+	public function testConfigMissingAlerts() {
+		$project = $this->objFromFixture('DNProject', 'test-project');
+		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
+
+		$service = Injector::inst()->create('SpyAlertServiceMissingAlerts');
+		$service->setGateway($this->mockGateway);
+
+		$result = $service->sync($project, $environment, $this->log);
+
+		$this->assertFalse($result);
+		$this->assertContains('ERROR: Misconfigured alerts.yml. Missing "alerts" key.', $this->log->content());
+	}
+
+	public function testConfigMalformed() {
+		$project = $this->objFromFixture('DNProject', 'test-project');
+		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
+
+		$service = Injector::inst()->create('SpyAlertServiceMalformedConfig');
+		$service->setGateway($this->mockGateway);
+
+		$result = $service->sync($project, $environment, $this->log);
+
+		$this->assertFalse($result);
+		$this->assertContains('ERROR: Could not parse alerts.yml. Unable to parse at line 1 (near "asdkjahr23434564uwerea").', $this->log->content());
+	}
+
 }
 
 class TestAlertService extends AlertService {
 
+	public function getAlertsConfigContent() {
+		return null;
+	}
+
 	public function setGateway($gateway) {
 		$this->gateway = $gateway;
+	}
+
+}
+
+class SpyAlertServiceMalformedConfig extends TestAlertService {
+
+	public function getAlertsConfigContent($project) {
+		return file_get_contents(BASE_PATH . '/deploynaut-alerts/tests/alerts-malformed.yml');
+	}
+
+}
+
+class SpyAlertServiceMissingAlerts extends TestAlertService {
+
+	public function getAlertsConfigContent($project) {
+		return file_get_contents(BASE_PATH . '/deploynaut-alerts/tests/alerts-missing.yml');
 	}
 
 }

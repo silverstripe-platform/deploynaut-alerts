@@ -35,59 +35,21 @@ class AlertService {
 			return false;
 		}
 
-		// check if there's anything in the alerts.yml for this environment
-		$config = Yaml::parse($content);
+		try {
+			$config = Yaml::parse($content);
+		} catch(Symfony\Component\Yaml\Exception\ParseException $e) {
+			$log->write(sprintf('ERROR: Could not parse alerts.yml. %s', $e->getMessage()));
+			return false;
+		}
+
 		if(!isset($config['alerts'])) {
-			$log->write('ERROR: Malformed alerts.yml. Missing "alerts" key.');
+			$log->write('ERROR: Misconfigured alerts.yml. Missing "alerts" key.');
 			return false;
 		}
 
 		foreach($config['alerts'] as $alertName => $alertConfig) {
-			// validate we have an environment set for the alert
-			if(!isset($alertConfig['environment'])) {
-				$log->write(sprintf('ERROR: Malformed alerts.yml. Missing "environment" key for alert "%s".', $alertName));
-				return false;
-			}
-
-			// validate we have an environmentcheck suite name to check
-			if(!isset($alertConfig['envcheck-suite'])) {
-				$log->write(sprintf('ERROR: Malformed alerts.yml. Missing "envcheck-suite" key for alert "%s".', $alertName));
-				return false;
-			}
-
-			// validate we have contacts for the alert
-			if(!isset($alertConfig['contacts'])) {
-				$log->write(sprintf('ERROR: Malformed alerts.yml. Missing "contacts" key for alert "%s".', $alertName));
-				return false;
-			}
-
-			// validate that each value in the config is valid, build up a list of contacts we'll use later
-			$contactsList = new ArrayList();
-			foreach($alertConfig['contacts'] as $contactEmail) {
-				// special case for ops
-				if($contactEmail == 'ops') {
-					$contact = new ArrayData(array(
-						'IsOps' => true,
-						'Name' => 'SilverStripe Operations Team',
-						'Email' => DEPLOYNAUT_OPS_EMAIL,
-						'SMS' => null
-					));
-				} else {
-					$contact = AlertContact::get()->filter('Email', $contactEmail)->first();
-					if(!($contact && $contact->exists())) {
-						$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail, $alertName));
-						return false;
-					}
-				}
-
-				$contactsList->push($contact);
-			}
-
-			// validate the environment specified in the alert actually exists
-			if(!DNEnvironment::get()->filter('Name', $alertConfig['environment'])->first()) {
-				$log->write('ERROR: Invalid environment "%s" in alerts.yml.');
-				return false;
-			}
+			$valid = $this->validateAlert($alertName, $alertConfig, $log);
+			if(!$valid) continue;
 
 			// the alert has an environment that matches the environment we're deploying to now. Configure the alerts.
 			if($alertConfig['environment'] == $environment->Name) {
@@ -107,17 +69,24 @@ class AlertService {
 			$contacts = array();
 			$paused = false;
 
-			foreach($contactsList as $contact) {
+			foreach($alertConfig['contacts'] as $contactEmail) {
 				// alerts that concern ops are not effective immediately, but paused until ops have approved the alert
-				if($contact->IsOps) {
+				// special case for ops
+				if($contactEmail == 'ops') {
 					$paused = true;
+					$contacts[] = array(
+						'name' => 'SilverStripe Operations Team',
+						'email' => DEPLOYNAUT_OPS_EMAIL,
+						'sms' => null
+					);
+				} else {
+					$contact = AlertContact::get()->filter('Email', $contactEmail)->first();
+					$contacts[] = array(
+						'name' => $contact->Name,
+						'email' => $contact->Email,
+						'sms' => $contact->SMS
+					);
 				}
-
-				$contacts[] = array(
-					'name' => $contact->Name,
-					'email' => $contact->Email,
-					'sms' => $contact->SMS
-				);
 			}
 
 			$result = $this->gateway->addOrModifyAlert(
@@ -129,7 +98,7 @@ class AlertService {
 
 			if(!$result) {
 				$log->write(sprintf('Failed to configure alert "%s"', $alertName));
-				return false;
+				continue;
 			}
 
 			if($paused) {
@@ -140,6 +109,46 @@ class AlertService {
 			} else {
 				$log->write(sprintf('Successfully configured alert "%s"', $alertName));
 			}
+		}
+
+		return true;
+	}
+
+	public function validateAlert($name, $config, $log) {
+		// validate we have an environment set for the alert
+		if(!isset($config['environment'])) {
+			$log->write(sprintf('ERROR: Misconfigured alerts.yml. Missing "environment" key for alert "%s".', $name));
+			return false;
+		}
+
+		// validate we have an environmentcheck suite name to check
+		if(!isset($config['envcheck-suite'])) {
+			$log->write(sprintf('ERROR: Misconfigured alerts.yml. Missing "envcheck-suite" key for alert "%s".', $name));
+			return false;
+		}
+
+		// validate we have contacts for the alert
+		if(!isset($config['contacts'])) {
+			$log->write(sprintf('ERROR: Misconfigured alerts.yml. Missing "contacts" key for alert "%s".', $name));
+			return false;
+		}
+
+		// validate that each value in the config is valid, build up a list of contacts we'll use later
+		foreach($config['contacts'] as $contactEmail) {
+			// special case for ops
+			if($contactEmail == 'ops') continue;
+
+			$contact = AlertContact::get()->filter('Email', $contactEmail)->first();
+			if(!($contact && $contact->exists())) {
+				$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail, $name));
+				return false;
+			}
+		}
+
+		// validate the environment specified in the alert actually exists
+		if(!DNEnvironment::get()->filter('Name', $config['environment'])->first()) {
+			$log->write(sprintf('ERROR: Invalid environment "%s" in alerts.yml.', $config['environment']));
+			return false;
 		}
 
 		return true;
