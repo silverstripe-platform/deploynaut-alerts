@@ -127,7 +127,7 @@ class AlertServiceTest extends SapphireTest {
 
 class TestAlertService extends AlertService {
 
-	public function getAlertsConfigContent() {
+	public function getAlertsConfigContent($project) {
 		return null;
 	}
 
