@@ -47,6 +47,11 @@ class PingdomGatewayTest extends SapphireTest {
 			)
 		));
 
+		$newUser = (object) array( 'contact' => (object)array(
+			'id' => 10961547,
+			'name' => 'random user'
+		));
+
 		$this->api->expects($this->at(0))
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
@@ -54,7 +59,8 @@ class PingdomGatewayTest extends SapphireTest {
 
 		$this->api->expects($this->at(1))
 			->method('request')
-			->with($this->equalTo('POST'), $this->equalTo('notification_contacts'));
+			->with($this->equalTo('POST'), $this->equalTo('notification_contacts'))
+			->will($this->returnValue($newUser));
 
 		$newContact = array(
 			'name' => 'random user',
@@ -82,13 +88,19 @@ class PingdomGatewayTest extends SapphireTest {
 			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
 			->will($this->returnValue($result));
 
+		$newUser = (object) array( 'contact' => (object)array(
+			'id' => 10961547,
+			'name' => 'random@silverstripe.com'
+		));
+
 		// expect that name is set to the email address
 		$this->api->expects($this->at(1))
 			->method('request')
 			->with($this->equalTo('POST'), $this->equalTo('notification_contacts'), $this->equalTo(array(
 				'email' => 'random@silverstripe.com',
 				'name' => 'random@silverstripe.com',
-			)));
+			)))
+			->will($this->returnValue($newUser));
 
 		$newContact = array(
 			'email' => 'random@silverstripe.com',
@@ -131,25 +143,25 @@ class PingdomGatewayTest extends SapphireTest {
 		$pw = PingdomGateway::create();
 
 		$this->assertEquals($pw ->paramsFromURL("https://test.com/endpoint"), array(
-			"name" => "test.com",
+			"host" => "test.com",
 			"url" => '/endpoint',
 			"encryption" => true,
 		));
 
 		$this->assertEquals($pw->paramsFromURL("http://test.nu/endpoint2"), array(
-			"name" => "test.nu",
+			"host" => "test.nu",
 			"url" => '/endpoint2',
 			"encryption" => false,
 		));
 
 		$this->assertEquals($pw->paramsFromURL("https://test.net/"), array(
-			"name" => "test.net",
+			"host" => "test.net",
 			"url" => '/',
 			"encryption" => true,
 		));
 
 		$this->assertEquals($pw->paramsFromURL("https://test.net/"),  array(
-			"name" => "test.net",
+			"host" => "test.net",
 			"url" => '/',
 			"encryption" => true,
 		));
@@ -159,9 +171,15 @@ class PingdomGatewayTest extends SapphireTest {
 		$this->assertEquals($pw->paramsFromURL("laosdlasdo"), array());
 
 		$this->assertEquals($pw->paramsFromURL("http://test.com/hello?test"), array(
-			"name" => "test.com",
+			"host" => "test.com",
 			"url" => '/hello?test',
 			"encryption" => false
 		));
+	}
+
+	public function testAddOrModifyAlert() {
+		/* @var PingdomGateway */
+		$pw = PingdomGateway::create();
+		$pw->addOrModifyAlert('https://test.com/dev/check', array('contact@test.com' => 'contact name'), 5, false);
 	}
 }
