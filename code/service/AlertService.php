@@ -48,7 +48,7 @@ class AlertService {
 		}
 
 		foreach($config['alerts'] as $alertName => $alertConfig) {
-			$valid = $this->validateAlert($alertName, $alertConfig, $log);
+			$valid = $this->validateAlert($alertName, $alertConfig, $project, $log);
 			if(!$valid) continue;
 
 			// the alert has an environment that matches the environment we're deploying to now. Configure the alerts.
@@ -80,7 +80,12 @@ class AlertService {
 						'sms' => null
 					);
 				} else {
-					$contact = AlertContact::get()->filter('Email', $contactEmail)->first();
+					// this should never return false, as validateAlert() checks that it exists prior
+					$contact = AlertContact::get()->filter(array(
+						'Email' => $contactEmail,
+						'ProjectID' => $project->ID
+					))->first();
+
 					$contacts[] = array(
 						'name' => $contact->Name,
 						'email' => $contact->Email,
@@ -119,10 +124,11 @@ class AlertService {
 	 *
 	 * @param string $name
 	 * @param array $config
+	 * @param DNProject $project
 	 * @param DeploynautLogFile $log
 	 * @return boolean
 	 */
-	public function validateAlert($name, $config, $log) {
+	public function validateAlert($name, $config, $project, $log) {
 		// validate we have an environment set for the alert
 		if(!isset($config['environment'])) {
 			$log->write(sprintf('ERROR: Misconfigured alerts.yml. Missing "environment" key for alert "%s".', $name));
@@ -146,7 +152,11 @@ class AlertService {
 			// special case for ops
 			if($contactEmail == 'ops') continue;
 
-			$contact = AlertContact::get()->filter('Email', $contactEmail)->first();
+			$contact = AlertContact::get()->filter(array(
+				'Email' => $contactEmail,
+				'ProjectID' => $project->ID
+			))->first();
+
 			if(!($contact && $contact->exists())) {
 				$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail, $name));
 				return false;
