@@ -177,9 +177,11 @@ class PingdomGatewayTest extends SapphireTest {
 		));
 	}
 
-	public function testAddOrModifyAlert() {
+	public function testAddOrModifyAlertError() {
 		/* @var PingdomGateway */
 		$pw = PingdomGateway::create();
 		$pw->addOrModifyAlert('https://test.com/dev/check', array('contact@test.com' => 'contact name'), 5, false);
+		$this->assertEquals($pw->getLastError(), "one contact did not have a 'name' defined");
+
 	}
 }
