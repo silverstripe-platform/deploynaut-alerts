@@ -152,6 +152,7 @@ class PingdomGateway extends Object {
 	 * @param int $resolution - 1, 5, 15, 30, 60 mins
 	 * @param bool $pause - set to true to pause this check
 	 * @return bool - check successfully added
+	 * @throws Exception
 	 */
 	public function addOrModifyAlert($url, $contacts, $resolution = 5, $pause=false) {
 
@@ -270,11 +271,20 @@ class PingdomGateway extends Object {
 			return true;
 		}
 
-		// @todo(stig): since this is a new check add all contacts
-		// @todo(stig): add a new check
-		// @todo(stig): garbage collect eventually old checks, however we are going to do that..
-		// $this->pingdom->addCheck($params);
-
+		// @todo(stig): garbage collect old checks, however we are going to do that..
+		$contactIds = array();
+		foreach($contacts as $contact) {
+			$contactParams = $contact;
+			unset($contactParams['status']);
+			unset($contactParams['id']);
+			echo "Add ".$contact['email'] . PHP_EOL;
+			$newContact = $this->pingdom->addNotificationContact($contactParams);
+			$contactIds[] = $newContact->id;
+		}
+		$params['contactids'] = implode(',',$contactIds);
+		$params['name'] = $params['url'];
+		$params['type'] = 'http';
+		$this->pingdom->addCheck($params);
 		return true;
 	}
 
