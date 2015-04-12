@@ -75,7 +75,7 @@ class AlertService {
 				if($contactEmail == 'ops') {
 					$paused = true;
 					$contacts[] = array(
-						'name' => 'SilverStripe Operations Team',
+						'name' => sprintf('SilverStripe Operations Team <%s>', DEPLOYNAUT_OPS_EMAIL),
 						'email' => DEPLOYNAUT_OPS_EMAIL,
 						'sms' => null
 					);
@@ -87,7 +87,7 @@ class AlertService {
 					))->first();
 
 					$contacts[] = array(
-						'name' => $contact->Name,
+						'name' => sprintf('%s <%s>', $contact->Name, $contact->Email),
 						'email' => $contact->Email,
 						'sms' => $contact->SMS
 					);
