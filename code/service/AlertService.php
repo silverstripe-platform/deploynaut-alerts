@@ -94,15 +94,21 @@ class AlertService {
 				}
 			}
 
-			$result = $this->gateway->addOrModifyAlert(
-				sprintf('%s/dev/check/%s', $environment->URL, $alertConfig['envcheck-suite']),
-				$contacts,
-				5, // the check interval in minutes
-				$paused
-			);
+			try {
+				$result = $this->gateway->addOrModifyAlert(
+					sprintf('%s/dev/check/%s', $environment->URL, $alertConfig['envcheck-suite']),
+					$contacts,
+					5, // the check interval in minutes
+					$paused
+				);
+			} catch(\Exception $e) {
+				$log->write(sprintf('Failed to configure alert "%s" due to alert service API failure %s .', $alertName, $e->getMessage()));
+				continue;
+			}
 
 			if(!$result) {
 				$log->write(sprintf('Failed to configure alert "%s"', $alertName));
+				$log->write(sprintf('Err: %s',$this->gateway->getLastError()));
 				continue;
 			}
 
