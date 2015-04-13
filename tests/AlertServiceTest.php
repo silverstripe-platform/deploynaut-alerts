@@ -10,7 +10,15 @@ class AlertServiceTest extends SapphireTest {
 	public function setUp() {
 		parent::setUp();
 
+		$api = $this->getMock(
+			'\Acquia\Pingdom\PingdomApi',
+			array('request'), // only mock the request method
+			array("user@test.com", "password", "token") // constructor arguments
+		);
+		Injector::inst()->registerService($api, 'PingdomService');
+
 		$this->mockGateway = $this->getMock('PingdomGateway');
+
 
 		$logFile = 'test-logs';
 		touch(DEPLOYNAUT_LOG_PATH . '/' . $logFile);
