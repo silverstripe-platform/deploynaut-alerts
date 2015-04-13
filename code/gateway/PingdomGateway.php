@@ -24,6 +24,9 @@ class PingdomGateway extends Object {
 	 */
 	protected $lastError;
 
+	/**
+	 * @var array
+	 */
 	protected $contactCache = array();
 
 	/**
@@ -60,7 +63,7 @@ class PingdomGateway extends Object {
 	 */
 	public function getCheckURL($check) {
 		if(!property_exists($check->type, 'http')) {
-			return 'not a http check';
+			return false;
 		}
 		$data = $check->type->http;
 		$proto = ($data->encryption)?'https://':'http://';

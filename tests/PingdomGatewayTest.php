@@ -183,11 +183,184 @@ class PingdomGatewayTest extends SapphireTest {
 		));
 	}
 
-	public function testAddOrModifyAlertError() {
+	public function testGetNotificationContact() {
+		$result = (object) array('contacts' => array(
+			(object) array(
+				'email' => 'contact@test.com',
+				'id' => 231231,
+				'name' => 'Test Contact (u)',
+			)
+		));
+		$this->api->expects($this->once())
+			->method('request')
+			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
+			->will($this->returnValue($result));
+
+		$pw = PingdomGateway::create();
+		$contact = $pw->getNotificationContact(231231);
+		$this->assertEquals($contact->id, 231231);
+	}
+
+	public function testGetNotificationContactNotFound() {
+		$result = (object) array('contacts' => array(
+			(object) array(
+				'email' => 'contact@test.com',
+				'id' => 231231,
+				'name' => 'Test Contact (u)',
+			)
+		));
+		$this->api->expects($this->once())
+			->method('request')
+			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
+			->will($this->returnValue($result));
+
+		$pw = PingdomGateway::create();
+		$contact = $pw->getNotificationContact(10961547);
+		$this->assertEquals($contact, false);
+	}
+
+	public function testGetCheckURL() {
+		$check = (object) array(
+			'hostname' => 'test.com',
+			'type' => (object) array(
+				'http' => (object) array(
+					'encryption' => true,
+					'url' => '/dev/check/suite'
+				)
+			),
+			'encryption' => true,
+		);
+
+		$pw = PingdomGateway::create();
+		$url = $pw->getCheckURL($check);
+		$this->assertEquals($url, 'https://test.com/dev/check/suite');
+
+		$check->type->http->encryption = false;
+		$url = $pw->getCheckURL($check);
+		$this->assertEquals($url, 'http://test.com/dev/check/suite');
+	}
+
+	public function testGetCheckURLNotHTTPCheck() {
+		$check = (object) array(
+			'hostname' => 'test.com',
+			'type' => (object) array(
+				'tcp' => (object) array( 'port' => 80 )
+			),
+			'encryption' => true,
+		);
+
+		$pw = PingdomGateway::create();
+		$url = $pw->getCheckURL($check);
+		$this->assertEquals($url, false);
+	}
+//
+//	public function testRemoveNotificationContact() {
+//
+//	}
+//
+//	public function testGetChecks() {
+//
+//	}
+//
+//	public function testGetCheck() {
+//
+//	}
+//
+//	public function testModifyCheck() {
+//
+//	}
+//
+//	public function testGetContactsForCheck() {
+//
+//	}
+//
+//	public function testFindExistingCheck() {
+//
+//	}
+
+	public function testAddOrModifyAlertErrorNoName() {
 		/* @var PingdomGateway */
 		$pw = PingdomGateway::create();
-		$pw->addOrModifyAlert('https://test.com/dev/check', array('contact@test.com' => 'contact name'), 5, false);
+		$pw->addOrModifyAlert(
+			'https://test.com/dev/check',
+			array( array('email' => 'contact@test.com') ),
+			5,
+			false
+		);
 		$this->assertEquals($pw->getLastError(), "one contact did not have a 'name' defined");
+	}
 
+	/**
+	 * @covers PingdomGateway::addOrModifyAlert
+	 */
+	public function testAddOrModifyAlert() {
+
+		$getChecks = (object) array('checks' => array(
+			(object) array(
+				'id' => 578657,
+				'name' => '/dev/check/suite',
+				'hostname' => 'test.com',
+				'resolution' => 1,
+				'type' => 'http',
+				'status' => 'UP',
+			)
+		));
+		$this->api->expects($this->at(0))
+			->method('request')
+			->with($this->equalTo('GET'), $this->equalTo('checks'))
+			->will($this->returnValue($getChecks));
+
+		$getCheck = (object) array( 'check' => (object) array(
+			'id' => 578657,
+			'name' => '/dev/check/suite',
+			'hostname' => 'test.com',
+			'resolution' => 1,
+			'type' => (object) array(
+				'http' => (object) array(
+					'encryption' => true,
+					'url' => '/dev/check/suite'
+				)
+			),
+			'encryption' => true,
+			'status' => 'UP',
+		));
+
+		$this->api->expects($this->at(1))
+			->method('request')
+			->with($this->equalTo('GET'), $this->equalTo('checks/578657'))
+			->will($this->returnValue($getCheck));
+
+		$postNotificationContact = (object) array(
+			'contact' => (object) array(
+				'id' => 123456,
+				'name' => 'contact name',
+			)
+		);
+
+		$this->api->expects($this->at(2))
+			->method('request')
+			->with($this->equalTo('POST'), $this->equalTo('notification_contacts'))
+			->will($this->returnValue($postNotificationContact));
+
+
+		$putCheck = (object) array(
+			'message' => 'silly message'
+		);
+
+		$this->api->expects($this->at(3))
+			->method('request')
+			->with($this->equalTo('PUT'), $this->equalTo('checks/578657'))
+			->will($this->returnValue($putCheck));
+
+
+		$pw = PingdomGateway::create();
+		$success = $pw->addOrModifyAlert(
+			'https://test.com/dev/check/suite',
+			array( array('email' => 'contact@test.com', 'name' => 'contact name') ),
+			1,
+			false
+		);
+		$this->assertEquals($pw->getLastError(), null);
+		$this->assertTrue($success);
 	}
 }
