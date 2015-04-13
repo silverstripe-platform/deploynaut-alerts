@@ -21,7 +21,7 @@ $AlertsConfigContent
 <h4>Configuring alerts</h4>
 
 <p>Alerts are sent when a check against an <a href="https://github.com/silverstripe-labs/silverstripe-environmentcheck/">environmentcheck module suite</a> fails with a bad HTTP response status.
-You configure these checks by placing a YAML file <code>alerts.yml</code> in the <code>_config</code> directory of your site code. Here's an example of what it looks like:</p>
+You configure these checks by placing a YAML file <code>alerts.yml</code> in the root of your site code. Here's an example of what it looks like:</p>
 
 <pre>
 alerts:

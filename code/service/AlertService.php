@@ -14,7 +14,7 @@ class AlertService {
 	 */
 	public function getAlertsConfigContent($project) {
 		return shell_exec(sprintf(
-			'cd %s && git show --format=raw HEAD:_config/alerts.yml',
+			'cd %s && git show --format=raw HEAD:alerts.yml',
 			$project->getLocalCVSPath()
 		));
 	}
