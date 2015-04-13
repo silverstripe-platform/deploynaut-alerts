@@ -107,8 +107,7 @@ class AlertService {
 			}
 
 			if(!$result) {
-				$log->write(sprintf('Failed to configure alert "%s"', $alertName));
-				$log->write(sprintf('Err: %s',$this->gateway->getLastError()));
+				$log->write(sprintf('Failed to configure alert "%s". Error: %s', $alertName, $this->gateway->getLastError()));
 				continue;
 			}
 
