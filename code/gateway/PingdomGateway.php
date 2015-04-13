@@ -241,7 +241,6 @@ class PingdomGateway extends Object {
 					unset($contactParams['status']);
 					unset($contactParams['id']);
 
-					echo "Add ".$contact['email'] . PHP_EOL;
 					$newContact = $this->pingdom->addNotificationContact($contactParams);
 					$contactIds[] = $newContact->id;
 					continue;
@@ -253,7 +252,6 @@ class PingdomGateway extends Object {
 						$contactIds[] = $contact['id'];
 						break;
 					case "change":
-						echo "Change ".$contact['email'].PHP_EOL;
 						$contactParams = $contact;
 						unset($contactParams['status']);
 						unset($contactParams['id']);
@@ -261,7 +259,6 @@ class PingdomGateway extends Object {
 						$contactIds[] = $contact['id'];
 						break;
 					case "remove":
-						echo "Remove ".$contact['email'].PHP_EOL;
 						$this->pingdom->removeNotificationContact($contact['id']);
 						break;
 				}
@@ -277,7 +274,6 @@ class PingdomGateway extends Object {
 			$contactParams = $contact;
 			unset($contactParams['status']);
 			unset($contactParams['id']);
-			echo "Add ".$contact['email'] . PHP_EOL;
 			$newContact = $this->pingdom->addNotificationContact($contactParams);
 			$contactIds[] = $newContact->id;
 		}
