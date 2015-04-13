@@ -15,7 +15,9 @@
 
 <% if $AlertsConfigContent %>
 <h4>Currently configured alerts</h4>
+<pre>
 $AlertsConfigContent
+</pre>
 <% end_if %>
 
 <h4>Configuring alerts</h4>
