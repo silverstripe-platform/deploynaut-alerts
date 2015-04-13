@@ -189,7 +189,7 @@ class PingdomGateway extends Object {
 			"tags" => "tag1,tag2", // doesn't seems like these are getting set
 		));
 
-		$existingCheck = $this->findExistingCheck($url, $params['host']);
+		$existingCheck = $this->findExistingCheck($params);
 
 		if($existingCheck) {
 			$existingContacts = array();
@@ -308,20 +308,20 @@ class PingdomGateway extends Object {
 	}
 
 	/**
-	 * @param string $url
-	 * @param string $hostname
+	 * @param array $params
 	 * @return array
 	 */
-	public function findExistingCheck($url, $hostname) {
+	public function findExistingCheck($params) {
 		$checks = $this->getChecks();
+
+		$url = $params['encryption'] ? 'https://' : 'http://';
+		$url.= $params['host'].$params['url'];
 		foreach($checks as $check) {
-			if($check->hostname != $hostname) {
+			if($check->hostname != $params['host']) {
 				continue;
 			}
 			$detailedCheck = $this->pingdom->getCheck($check->id);
-
 			$existingUrl = $this->getCheckURL($detailedCheck);
-
 			// we found an existing check
 			if($existingUrl == $url) {
 				return $detailedCheck;
