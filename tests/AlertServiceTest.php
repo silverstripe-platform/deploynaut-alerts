@@ -53,7 +53,7 @@ class AlertServiceTest extends SapphireTest {
 		$this->mockGateway->expects($this->once())
 			->method('addOrModifyAlert')
 			->with('http://mysite-uat.com/dev/check/check', array(
-				array('name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com', 'sms' => null),
+				array('name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com'),
 			), 5, false)
 			->will($this->returnValue(true));
 
@@ -75,9 +75,9 @@ class AlertServiceTest extends SapphireTest {
 		$this->mockGateway->expects($this->once())
 			->method('addOrModifyAlert')
 			->with('http://mysite.com/dev/check/health', array(
-				array('name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com', 'sms' => null),
-				array('name' => 'Jane Bloggs <jane@email.com>', 'email' => 'jane@email.com', 'sms' => null),
-				array('name' => sprintf('SilverStripe Operations Team <%s>', DEPLOYNAUT_OPS_EMAIL), 'email' => DEPLOYNAUT_OPS_EMAIL, 'sms' => null)
+				array('name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com'),
+				array('name' => 'Jane Bloggs <jane@email.com>', 'email' => 'jane@email.com'),
+				array('name' => sprintf('SilverStripe Operations Team <%s>', DEPLOYNAUT_OPS_EMAIL), 'email' => DEPLOYNAUT_OPS_EMAIL)
 			), 5, true)
 			->will($this->returnValue(true));
 

@@ -83,8 +83,7 @@ class AlertService {
 					$paused = true;
 					$contacts[] = array(
 						'name' => sprintf('SilverStripe Operations Team <%s>', DEPLOYNAUT_OPS_EMAIL),
-						'email' => DEPLOYNAUT_OPS_EMAIL,
-						'sms' => null
+						'email' => DEPLOYNAUT_OPS_EMAIL
 					);
 				} else {
 					// this should never return false, as validateAlert() checks that it exists prior
@@ -95,8 +94,7 @@ class AlertService {
 
 					$contacts[] = array(
 						'name' => sprintf('%s <%s>', $contact->Name, $contact->Email),
-						'email' => $contact->Email,
-						'sms' => $contact->SMS
+						'email' => $contact->Email
 					);
 				}
 			}

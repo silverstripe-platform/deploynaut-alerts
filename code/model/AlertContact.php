@@ -3,8 +3,7 @@ class AlertContact extends DataObject {
 
 	private static $db = array(
 		'Name' => 'Varchar(255)',
-		'Email' => 'Varchar(255)',
-		'SMS' => 'Varchar(100)'
+		'Email' => 'Varchar(255)'
 	);
 
 	private static $has_one = array(
