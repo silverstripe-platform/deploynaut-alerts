@@ -1,5 +1,6 @@
 <?php
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Process\Process;
 
 class AlertService {
 
@@ -13,10 +14,16 @@ class AlertService {
 	 * @return null|string
 	 */
 	public function getAlertsConfigContent($project) {
-		return shell_exec(sprintf(
-			'cd %s && git show --format=raw HEAD:alerts.yml',
-			$project->getLocalCVSPath()
-		));
+		$process = new Process('git show --format=raw HEAD:alerts.yml', $project->getLocalCVSPath());
+		$process->run();
+
+		// we don't care if the command wasn't successful, which would be caused by a missing alerts.yml
+		// sync() will take care of outputting the "No alerts.yml found" error message to the user.
+		if(!$process->isSuccessful()) {
+			return false;
+		}
+
+		return $process->getOutput();
 	}
 
 	/**
