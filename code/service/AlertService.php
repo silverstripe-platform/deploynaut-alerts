@@ -81,6 +81,8 @@ class AlertService {
 				// special case for ops
 				if($contactEmail == 'ops') {
 					$paused = true;
+
+					// @todo add the ops 24/7 phone number here?
 					$contacts[] = array(
 						'name' => sprintf('SilverStripe Operations Team <%s>', DEPLOYNAUT_OPS_EMAIL),
 						'email' => DEPLOYNAUT_OPS_EMAIL
@@ -94,7 +96,10 @@ class AlertService {
 
 					$contacts[] = array(
 						'name' => sprintf('%s <%s>', $contact->Name, $contact->Email),
-						'email' => $contact->Email
+						'email' => $contact->Email,
+						'cellphone' => $contact->SMSCellphone,
+						'countrycode' => $contact->SMSCountryCode,
+						'countryiso' => $contact->SMSCountryISO
 					);
 				}
 			}

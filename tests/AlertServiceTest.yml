@@ -15,6 +15,9 @@ AlertContact:
     Name: Joe Bloggs
     Email: joe@email.com
     Project: =>DNProject.test-project
+    SMSCellphone: 21123456
+    SMSCountryCode: 64
+    SMSCountryISO: NZ
   contact-jane:
     Name: Jane Bloggs
     Email: jane@email.com
