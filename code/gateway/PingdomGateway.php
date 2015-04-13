@@ -343,10 +343,15 @@ class PingdomGateway extends Object {
 		if(count($matches) != 4) {
 			return array();
 		}
+		$url = $matches[3];
+		// remove double // from the beginning of the url
+		if (substr($url, 0, 2) == '//') {
+			$url = substr($url, strlen(1));
+		}
 		return array(
 			"host" => $matches[2],
-			"url" => $matches[3],
-			"encryption" => ($matches[1] == 'https')?true:false,
+			"url" => $url,
+			"encryption" => ($matches[1] == 'https') ? true:false,
 		);
 	}
 

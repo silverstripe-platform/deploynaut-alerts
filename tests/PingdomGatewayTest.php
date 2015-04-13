@@ -148,6 +148,12 @@ class PingdomGatewayTest extends SapphireTest {
 			"encryption" => true,
 		));
 
+		$this->assertEquals($pw ->paramsFromURL("https://test.com//dev/check"), array(
+			"host" => "test.com",
+			"url" => '/dev/check',
+			"encryption" => true,
+		));
+
 		$this->assertEquals($pw->paramsFromURL("http://test.nu/endpoint2"), array(
 			"host" => "test.nu",
 			"url" => '/endpoint2',
