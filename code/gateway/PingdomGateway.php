@@ -277,7 +277,7 @@ class PingdomGateway extends Object {
 			$newContact = $this->pingdom->addNotificationContact($contactParams);
 			$contactIds[] = $newContact->id;
 		}
-		$params['contactids'] = implode(',',$contactIds);
+		$params['contactids'] = implode(',', $contactIds);
 		$params['name'] = $params['url'];
 		$params['type'] = 'http';
 		$this->pingdom->addCheck($params);
@@ -347,7 +347,7 @@ class PingdomGateway extends Object {
 		return array(
 			"host" => $matches[2],
 			"url" => $url,
-			"encryption" => ($matches[1] == 'https') ? true:false,
+			"encryption" => ($matches[1] == 'https') ? true : false,
 		);
 	}
 
