@@ -2,7 +2,7 @@
 
 # Pingdom configuration
 
-`mysites/_config/pindom.yaml
+`mysite/_config/pingdom.yaml`:
 
 	---
 	Name: my_pingdom
