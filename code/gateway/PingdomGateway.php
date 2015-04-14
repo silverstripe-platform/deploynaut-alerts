@@ -226,7 +226,6 @@ class PingdomGateway extends Object {
 				}
 				if($remove) {
 					$contacts[] = array(
-						'email' => $existingContact['email'],
 						'id' => $existingContact['id'],
 						'status' => 'remove',
 					);
@@ -302,7 +301,10 @@ class PingdomGateway extends Object {
 
 			$existingContacts[] = array(
 				'name' => $contact->name,
-				'email'=> $contact->email,
+				'email' => $contact->email,
+				'cellphone' => $contact->cellphone,
+				'countrycode' => $contact->countrycode,
+				'countryiso' => $contact->countryiso,
 				'id' => $contactID
 			);
 		}
