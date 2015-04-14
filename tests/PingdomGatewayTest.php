@@ -253,10 +253,47 @@ class PingdomGatewayTest extends SapphireTest {
 		$url = $pw->getCheckURL($check);
 		$this->assertEquals($url, false);
 	}
-//
-//	public function testRemoveNotificationContact() {
-//
-//	}
+
+	public function testRemoveNotificationContactNoDeletion() {
+		$getChecks = (object) array('contacts' => array(
+			(object) array(
+				'email' => 'contact@test.com',
+				'id' => 578657,
+				'name' => 'Test Contact (u)',
+			)
+		));
+		$this->api->expects($this->once())
+			->method('request')
+			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
+			->will($this->returnValue($getChecks));
+
+		$pw = PingdomGateway::create();
+		$result = $pw->removeNotificationContact('test@test.se');
+		$this->assertFalse($result);
+	}
+
+	public function testRemoveNotificationContact() {
+		$getChecks = (object) array('contacts' => array(
+			(object) array(
+				'email' => 'contact@test.com',
+				'id' => 578657,
+				'name' => 'Test Contact (u)',
+			)
+		));
+		$this->api->expects($this->at(0))
+			->method('request')
+			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
+			->will($this->returnValue($getChecks));
+
+		$this->api->expects($this->at(1))
+			->method('request')
+			->with($this->equalTo('DELETE'), $this->equalTo('notification_contacts/578657'))
+			->will($this->returnValue((object) array('message' => 'something got deleted')));
+
+		$pw = PingdomGateway::create();
+		$result = $pw->removeNotificationContact('contact@test.com');
+		$this->assertEquals($result, "something got deleted");
+	}
 //
 //	public function testGetChecks() {
 //
