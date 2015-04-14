@@ -65,13 +65,13 @@ class PingdomGateway extends Object {
 		if(!property_exists($check->type, 'http')) {
 			return false;
 		}
+
 		$data = $check->type->http;
 		$proto = ($data->encryption)?'https://':'http://';
 		$domain = $check->hostname;
 		$url = $data->url;
 
 		return $proto.$domain.$url;
-
 	}
 
 	/**
@@ -81,7 +81,6 @@ class PingdomGateway extends Object {
 	 * @return mixed
 	 */
 	public function addOrModifyContact(array $contact) {
-
 		if(empty($contact['email'])) {
 			throw new \RuntimeException("notification contact must have an email set");
 		}
@@ -92,13 +91,13 @@ class PingdomGateway extends Object {
 
 		$existingContacts = $this->getNotificationContacts(false);
 
-
 		$updateId = null;
 		foreach($existingContacts as $existingContact) {
 			if($existingContact->email == $contact['email']) {
 				return $this->pingdom->modifyNotificationContact($existingContact->id, $contact);
 			}
 		}
+
 		return $this->pingdom->addNotificationContact($contact);
 	}
 
@@ -158,7 +157,6 @@ class PingdomGateway extends Object {
 	 * @throws Exception
 	 */
 	public function addOrModifyAlert($url, $contacts, $resolution = 5, $pause=false) {
-
 		$params = $this->paramsFromURL($url);
 
 		if(!$params) {
@@ -212,6 +210,17 @@ class PingdomGateway extends Object {
 						}
 					}
 					$contacts[$key] = $contact;
+				}
+			}
+
+			// don't attempt to pause a modification of a check that concerns ops
+			// as it may have been manually unpaused.
+			// @todo this would be better done in the AlertService somehow, if it
+			// knew about the existing contacts.
+			foreach($existingContacts as $existingContact) {
+				if($existingContact['email'] == DEPLOYNAUT_OPS_EMAIL) {
+					unset($params['paused']);
+					break;
 				}
 			}
 

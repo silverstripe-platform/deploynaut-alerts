@@ -120,7 +120,7 @@ class AlertService {
 
 			if($paused) {
 				$log->write(sprintf(
-					'Successfully configured alert "%s", but has been disabled pending approval. Please contact SilverStripe Operations Team to have it approved',
+					'Successfully configured alert "%s". If this is newly configured, the alert will be paused. Please contact SilverStripe Operations Team to have it approved',
 					$alertName
 				));
 			} else {
