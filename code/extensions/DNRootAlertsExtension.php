@@ -64,7 +64,7 @@ class DNRootAlertsExtension extends Extension {
 			$form->sessionMessage('Invalid project. Please re-submit.', 'bad');
 			return $this->owner->redirectBack();
 		}
-		if(!defined('DEPLOYNAUT_ALERTS_APPROVE_EMAIL_TO') || !defined('DEPLOYNAUT_ALERTS_APPROVE_EMAIL_FROM')) {
+		if(!defined('DEPLOYNAUT_OPS_EMAIL') || !defined('DEPLOYNAUT_OPS_EMAIL_FROM')) {
 			$form->sessionMessage('This form has not been configured yet. Please try again later.', 'bad');
 			return $this->owner->redirectBack();
 		}

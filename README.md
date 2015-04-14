@@ -7,11 +7,6 @@ The following sets up to whom a request for 24/7 support for checks should be se
 	define('DEPLOYNAUT_OPS_EMAIL', 'ops@silverstripe.com');
 	define('DEPLOYNAUT_OPS_EMAIL_FROM', 'deploy@silverstripe.com');
 
-These define the email configuration for alert approval requests:
-
-	define('DEPLOYNAUT_ALERTS_APPROVE_EMAIL_TO', 'ops@silverstripe.com');
-	define('DEPLOYNAUT_ALERTS_APPROVE_EMAIL_FROM', 'deploy@silverstripe.com');
-
 The following is used by the pingdom api to create notification contacts and checks
 
 	define('PINGDOM_USERNAME', 'user@silverstripe.com');
