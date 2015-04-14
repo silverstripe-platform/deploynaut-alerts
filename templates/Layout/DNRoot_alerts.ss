@@ -67,7 +67,7 @@ alerts:
 <p>This is a special case so that developers can alert SilverStripe Operations Team when a check fails. This means if the alert is received by ops, they will look into the problem when the alert is received. This should be used only for critical checks that concern the uptime of the site.</p>
 
 <p>In order to use the ops contact and have it be effective, the check needs to be approved by the SilverStripe Operations Team. If you commit the check and deploy it, the check will be created but
-be paused by default. In order to get it started, please new request to the <a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a>.</p>
+be paused by default. In order to get it started, please submit a new request to the <a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a>.</p>
 
 <h4>Removing a check</h4>
 
