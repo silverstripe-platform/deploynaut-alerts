@@ -89,7 +89,7 @@ class AlertServiceTest extends SapphireTest {
 		$this->assertNotContains('Failed to configure alert "health-check"', $this->log->content());
 		$this->assertNotContains('Failed to configure alert "dev-check"', $this->log->content());
 		$this->assertContains('Skipping alert "dev-check" for environment "uat". Does not apply to this environment ("prod")', $this->log->content());
-		$this->assertContains('Successfully configured alert "health-check", but has been disabled pending approval. Please contact SilverStripe Operations Team to have it approved', $this->log->content());
+		$this->assertContains('Successfully configured alert "health-check". If this is newly configured, the alert will be paused. Please contact SilverStripe Operations Team to have it approved', $this->log->content());
 	}
 
 	public function testNoConfig() {
