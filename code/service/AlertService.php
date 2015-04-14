@@ -89,10 +89,7 @@ class AlertService {
 					);
 				} else {
 					// this should never return false, as validateAlert() checks that it exists prior
-					$contact = AlertContact::get()->filter(array(
-						'Email' => $contactEmail,
-						'ProjectID' => $project->ID
-					))->first();
+					$contact = $project->AlertContacts()->filter('Email', $contactEmail)->first();
 
 					$contacts[] = array(
 						'name' => sprintf('%s <%s>', $contact->Name, $contact->Email),
@@ -167,11 +164,7 @@ class AlertService {
 			// special case for ops
 			if($contactEmail == 'ops') continue;
 
-			$contact = AlertContact::get()->filter(array(
-				'Email' => $contactEmail,
-				'ProjectID' => $project->ID
-			))->first();
-
+			$contact = $project->AlertContacts()->filter('Email', $contactEmail)->first();
 			if(!($contact && $contact->exists())) {
 				$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail, $name));
 				return false;
