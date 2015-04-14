@@ -6,7 +6,7 @@ The user $Submitter.Name ($Submitter.Email) has requested approval for an alert 
 <p>Details submitted:</p>
 
 <ul>
-	<li>Project name: $ProjectName</li>
+	<li>Project name: $Project.Name</li>
 	<li>Alert name: $AlertName</li>
 	<li>Comments: $Comments</li>
 </ul>

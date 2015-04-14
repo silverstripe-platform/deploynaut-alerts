@@ -52,7 +52,7 @@ class DNRootAlertsExtension extends Extension {
 		), new FieldList(
 			new FormAction('doAlertApprovalForm', 'Submit')
 		), new RequiredFields(array(
-			'ProjectName',
+			'ProjectID',
 			'AlertName'
 		)));
 	}
@@ -60,7 +60,7 @@ class DNRootAlertsExtension extends Extension {
 	public function doAlertApprovalForm($data, $form, $request) {
 		$project = $this->owner->DNProjectList()->filter('ID', $data['ProjectID'])->first();
 
-		if(!$project->exists()) {
+		if(!($project && $project->exists())) {
 			$form->sessionMessage('Invalid project. Please re-submit.', 'bad');
 			return $this->owner->redirectBack();
 		}
@@ -75,7 +75,7 @@ class DNRootAlertsExtension extends Extension {
 		$email->setSubject('Deploynaut approve alert request');
 		$email->setTemplate('ApproveAlertEmail');
 		$email->populateTemplate($data);
-		$email->populateTemplate(array('Submitter' => Member::currentUser()));
+		$email->populateTemplate(array('Submitter' => Member::currentUser(), 'Project' => $project));
 		$email->populateTemplate(array('ProjectAlertsLink' => sprintf('%s/naut/project/%s/alerts', BASE_URL, $project->Name)));
 		$email->send();
 
