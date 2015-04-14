@@ -9,16 +9,16 @@ class AlertService {
 	);
 
 	/**
-	 * Output the raw content of the alerts.yml file from HEAD of a bare repository.
+	 * Output the raw content of the .alerts.yml file from HEAD of a bare repository.
 	 * @param DNProject $project
 	 * @return null|string
 	 */
 	public function getAlertsConfigContent($project) {
-		$process = new Process('git show --format=raw HEAD:alerts.yml', $project->getLocalCVSPath());
+		$process = new Process('git show --format=raw HEAD:.alerts.yml', $project->getLocalCVSPath());
 		$process->run();
 
-		// we don't care if the command wasn't successful, which would be caused by a missing alerts.yml
-		// sync() will take care of outputting the "No alerts.yml found" error message to the user.
+		// we don't care if the command wasn't successful, which would be caused by a missing .alerts.yml
+		// sync() will take care of outputting the "No .alerts.yml found" error message to the user.
 		if(!$process->isSuccessful()) {
 			return false;
 		}
@@ -38,19 +38,19 @@ class AlertService {
 	public function sync($project, $environment, $log) {
 		$content = $this->getAlertsConfigContent($project);
 		if(!$content) {
-			$log->write('Skipping alert configuration. No alerts.yml found in site code.');
+			$log->write('Skipping alert configuration. No .alerts.yml found in site code.');
 			return false;
 		}
 
 		try {
 			$config = Yaml::parse($content);
 		} catch(Symfony\Component\Yaml\Exception\ParseException $e) {
-			$log->write(sprintf('ERROR: Could not parse alerts.yml. %s', $e->getMessage()));
+			$log->write(sprintf('ERROR: Could not parse .alerts.yml. %s', $e->getMessage()));
 			return false;
 		}
 
 		if(!isset($config['alerts'])) {
-			$log->write('ERROR: Misconfigured alerts.yml. Missing "alerts" key.');
+			$log->write('ERROR: Misconfigured .alerts.yml. Missing "alerts" key.');
 			return false;
 		}
 
@@ -60,7 +60,7 @@ class AlertService {
 
 			// the alert has an environment that matches the environment we're deploying to now. Configure the alerts.
 			if($alertConfig['environment'] == $environment->Name) {
-				$log->write(sprintf('Configuring alert "%s" from alerts.yml', $alertName));
+				$log->write(sprintf('Configuring alert "%s" from .alerts.yml', $alertName));
 			} else {
 				$log->write(sprintf(
 					'Skipping alert "%s" for environment "%s". Does not apply to this environment ("%s")',
@@ -143,19 +143,19 @@ class AlertService {
 	public function validateAlert($name, $config, $project, $log) {
 		// validate we have an environment set for the alert
 		if(!isset($config['environment'])) {
-			$log->write(sprintf('ERROR: Misconfigured alerts.yml. Missing "environment" key for alert "%s".', $name));
+			$log->write(sprintf('ERROR: Misconfigured .alerts.yml. Missing "environment" key for alert "%s".', $name));
 			return false;
 		}
 
 		// validate we have an environmentcheck suite name to check
 		if(!isset($config['envcheck-suite'])) {
-			$log->write(sprintf('ERROR: Misconfigured alerts.yml. Missing "envcheck-suite" key for alert "%s".', $name));
+			$log->write(sprintf('ERROR: Misconfigured .alerts.yml. Missing "envcheck-suite" key for alert "%s".', $name));
 			return false;
 		}
 
 		// validate we have contacts for the alert
 		if(!isset($config['contacts'])) {
-			$log->write(sprintf('ERROR: Misconfigured alerts.yml. Missing "contacts" key for alert "%s".', $name));
+			$log->write(sprintf('ERROR: Misconfigured .alerts.yml. Missing "contacts" key for alert "%s".', $name));
 			return false;
 		}
 
@@ -173,7 +173,7 @@ class AlertService {
 
 		// validate the environment specified in the alert actually exists
 		if(!DNEnvironment::get()->filter('Name', $config['environment'])->first()) {
-			$log->write(sprintf('ERROR: Invalid environment "%s" in alerts.yml.', $config['environment']));
+			$log->write(sprintf('ERROR: Invalid environment "%s" in .alerts.yml.', $config['environment']));
 			return false;
 		}
 

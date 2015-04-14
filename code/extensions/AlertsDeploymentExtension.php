@@ -7,7 +7,7 @@ class AlertsDeploymentExtension extends Extension {
 
 	/**
 	 * After a successful deployment, configure the Pingdom alerts
-	 * configured from the alerts.yml in the site code repository.
+	 * configured from the .alerts.yml in the site code repository.
 	 *
 	 * @param DNEnvironment $environment
 	 * @param string $sha

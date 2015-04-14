@@ -33,7 +33,7 @@ class AlertServiceTest extends SapphireTest {
 		$service = Injector::inst()->create('SpyAlertServiceMissingEnvironmentConfig');
 		$service->sync($project, $environment, $this->log);
 
-		$this->assertContains('ERROR: Misconfigured alerts.yml. Missing "environment" key for alert "dev-check"', $this->log->content());
+		$this->assertContains('ERROR: Misconfigured .alerts.yml. Missing "environment" key for alert "dev-check"', $this->log->content());
 	}
 
 	public function testMissingAlertContact() {
@@ -102,7 +102,7 @@ class AlertServiceTest extends SapphireTest {
 		$result = $service->sync($project, $environment, $this->log);
 
 		$this->assertFalse($result);
-		$this->assertContains('Skipping alert configuration. No alerts.yml found in site code', $this->log->content());
+		$this->assertContains('Skipping alert configuration. No .alerts.yml found in site code', $this->log->content());
 	}
 
 	public function testConfigMissingAlerts() {
@@ -115,7 +115,7 @@ class AlertServiceTest extends SapphireTest {
 		$result = $service->sync($project, $environment, $this->log);
 
 		$this->assertFalse($result);
-		$this->assertContains('ERROR: Misconfigured alerts.yml. Missing "alerts" key.', $this->log->content());
+		$this->assertContains('ERROR: Misconfigured .alerts.yml. Missing "alerts" key.', $this->log->content());
 	}
 
 	public function testConfigMalformed() {
@@ -128,7 +128,7 @@ class AlertServiceTest extends SapphireTest {
 		$result = $service->sync($project, $environment, $this->log);
 
 		$this->assertFalse($result);
-		$this->assertContains('ERROR: Could not parse alerts.yml. Unable to parse at line 1 (near "asdkjahr23434564uwerea").', $this->log->content());
+		$this->assertContains('ERROR: Could not parse .alerts.yml. Unable to parse at line 1 (near "asdkjahr23434564uwerea").', $this->log->content());
 	}
 
 }
