@@ -294,10 +294,25 @@ class PingdomGatewayTest extends SapphireTest {
 		$result = $pw->removeNotificationContact('contact@test.com');
 		$this->assertEquals($result, "something got deleted");
 	}
-//
-//	public function testGetChecks() {
-//
-//	}
+
+	public function testGetChecks() {
+		$getChecks = (object) array('checks' => array(
+			(object) array(
+				'id' => 578657,
+				'name' => '/dev/check/suite',
+				'hostname' => 'test.com',
+				'resolution' => 1,
+				'type' => 'http',
+				'status' => 'UP',
+			)
+		));
+		$this->api->expects($this->at(0))
+			->method('request')
+			->with($this->equalTo('GET'), $this->equalTo('checks'))
+			->will($this->returnValue($getChecks));
+		$pw = PingdomGateway::create();
+		$result = $pw->getChecks();
+	}
 //
 //	public function testGetCheck() {
 //
