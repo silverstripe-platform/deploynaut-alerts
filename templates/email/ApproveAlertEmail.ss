@@ -14,4 +14,4 @@ The user $Submitter.Name ($Submitter.Email) has requested approval for an alert 
 <p>To see more details of the check, you can examine the current configuration by going to the <a href="$ProjectAlertsLink">
 project's alert page in deploynaut</a>.
 
-<p>The check has been added to Pingdom but is currently paused. To approve the alert, login to Pingdom and enable the check.</p>
+<p>The check has been added to Pingdom but is currently paused. To approve the alert, <a href="https://my.pingdom.com/">login to Pingdom</a> and enable the check.</p>
