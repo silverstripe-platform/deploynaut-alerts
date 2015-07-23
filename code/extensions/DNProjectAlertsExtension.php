@@ -19,7 +19,7 @@ class DNProjectAlertsExtension extends DataExtension {
 		$list->push(new ArrayData(array(
 			'Link' => sprintf('naut/project/%s/alerts', $this->owner->Name),
 			'Title' => 'Alerts',
-			'IsActive' => Controller::curr()->getAction() == 'alerts'
+			'IsActive' => $this->owner->isCurrent() && Controller::curr()->getAction() == 'alerts'
 		)));
 	}
 
