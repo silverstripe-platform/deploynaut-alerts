@@ -1,4 +1,4 @@
-<h2>$Project.Title</h2>
+<h2>$CurrentProject.Title</h2>
 
 <% if $CurrentProject %>
 	<ul class="nav nav-tabs">

@@ -23,9 +23,8 @@ class DNRootAlertsExtension extends Extension {
 
 		return $this->owner->customise(array(
 			'Title' => 'Alerts',
-			'Project' => $project,
 			'CurrentProject' => $project,
-		))->renderWith(array('DNRoot_alerts', 'DNRoot'));
+		))->render();
 	}
 
 	public function approvealert(SS_HTTPRequest $request) {
@@ -36,9 +35,8 @@ class DNRootAlertsExtension extends Extension {
 
 		return $this->owner->customise(array(
 			'Title' => 'Alert approval',
-			'Project' => $project,
 			'CurrentProject' => $project,
-		))->renderWith(array('DNRoot_approvealert', 'DNRoot'));
+		))->render();
 	}
 
 	public function AlertApprovalForm() {
