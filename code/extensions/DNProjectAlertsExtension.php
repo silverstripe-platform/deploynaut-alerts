@@ -22,8 +22,8 @@ class DNProjectAlertsExtension extends DataExtension {
 		$list->push(new ArrayData(array(
 			'Link' => sprintf('naut/project/%s/alerts', $this->owner->Name),
 			'Title' => 'Alerts',
-			'IsCurrent' => $this->owner->isCurrent() && $controller->getAction() == 'alerts',
-			'IsSection' => $this->owner->isCurrent() && $actionType == DNRootAlertsExtension::ACTION_ALERT
+			'IsCurrent' => $this->owner->isSection() && $controller->getAction() == 'alerts',
+			'IsSection' => $this->owner->isSection() && $actionType == DNRootAlertsExtension::ACTION_ALERT
 		)));
 	}
 

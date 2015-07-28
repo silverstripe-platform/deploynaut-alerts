@@ -1,29 +1,44 @@
-<h2>$CurrentProject.Title</h2>
+<div class="content page-header">
+	<ol class="breadcrumb">
+		<li><a href="naut/project/$CurrentProject.Name">$CurrentProject.Title</a></li>
+	</ol>
 
-<% if $CurrentProject %>
+	<h1 class="page-heading">Alerts</h1>
+
 	<ul class="nav nav-tabs">
-		<% loop $CurrentProject.Menu %>
-		<li<% if $IsActive %> class="active"<% end_if %>><a href="$Link">$Title</a></li>
-		<% end_loop %>
+		<li class="active"><a href="$CurrentProject.Link/alerts">Overview</a></li>
+		<li><a href="$CurrentProject.Link/approvealert">Alert approval form</a></li>
 	</ul>
-	<ul class="nav level-2">
-		<li><a href="naut/project/$CurrentProject.Name/approvealert">Alert approval form</a></li>
-	</ul>
-<% end_if %>
+</div>
 
-<h3>Alerts</h3>
+<div class="content">
 
-<% if $AlertsConfigContent %>
-<h4>Currently configured alerts</h4>
-<pre>$AlertsConfigContent</pre>
-<% end_if %>
+	<% if $AlertsConfigContent %>
+		<h3>Currently configured alerts</h3>
+		<pre>$AlertsConfigContent</pre>
+	<% end_if %>
 
-<h4>Configuring alerts</h4>
+	<h3>Configuring alerts</h3>
 
-<p>Alerts are sent when a check against an <a href="https://github.com/silverstripe-labs/silverstripe-environmentcheck/">environmentcheck module suite</a> fails with a bad HTTP response status.
-You configure these checks by placing a <code>.alerts.yml</code> file in the root of your site code. Here's an example of what it looks like:</p>
+	<p>
+		Alerts are sent when a check against an
+		<a href="https://github.com/silverstripe-labs/silverstripe-environmentcheck/">environmentcheck module suite</a>
+		fails with a bad HTTP response status. You configure these checks by placing a <code>.alerts.yml</code> file in
+		the root of your site code.
+	</p>
 
-<pre>
+	<p>
+		Once the file is committed, you can deploy the code and the alerts will be configured at the end of the deployment.
+	</p>
+
+	<p>
+		<a class="btn btn-primary" role="button" data-toggle="collapse" href="#alertExample" aria-expanded="false" aria-controls="alertExample">
+			See an example
+		</a>
+	</p>
+
+
+<pre class="collapse" id="alertExample">
 alerts:
   dev-check:
     envcheck-suite: "check"
@@ -39,32 +54,49 @@ alerts:
       - "ops"
 </pre>
 
-<p>Once the file is committed, you can deploy the code and the alerts will be configured at the end of the deployment.</p>
 
-<h4>Possible values to use in configuration</h4>
+	<h3>Possible values to use in configuration</h3>
 
-<p>These <code>contacts</code> are available:</p>
+	<p>
+		These <code>environment</code> values are available:
+	</p>
 
-<ul>
-<% loop $CurrentProject.AlertContacts %>
-	<li>$Email</li>
-<% end_loop %>
-	<li>ops</li>
-</ul>
+	<ul>
+		<% loop $CurrentProject.DNEnvironmentList %>
+			<li>$Name</li>
+		<% end_loop %>
+	</ul>
 
-<p>Please contact the <a href="http://helpdesk.silverstripe.com">SilverStripe Operations Team</a> if you would like to add another contact to the list above.</p>
+	<p>
+		These <code>contacts</code> are available:
+	</p>
 
-<p>These <code>environment</code> values are available:</p>
+	<ul>
+		<% loop $CurrentProject.AlertContacts %>
+			<li>$Email</li>
+		<% end_loop %>
+		<li>ops</li>
+	</ul>
 
-<ul>
-<% loop $CurrentProject.DNEnvironmentList %>
-	<li>$Name</li>
-<% end_loop %>
-</ul>
+	<p>
+		Please contact the <a href="http://helpdesk.silverstripe.com">SilverStripe Operations Team</a> if you would like
+		to add another contact to the list above.
+	</p>
 
-<h4>Using "ops" as a contact</h4>
 
-<p>This is a special case so that developers can alert SilverStripe Operations Team when a check fails. This means if the alert is received by ops, they will look into the problem when the alert is received. This should be used only for critical checks that concern the uptime of the site.</p>
+	<h3>Using "ops" as a contact</h3>
 
-<p>In order to use the ops contact and have it be effective, the check needs to be approved by the SilverStripe Operations Team. If you commit the check and deploy it, the check will be created but
-be paused by default. In order to get it started, please submit a new request to the <a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a>.</p>
+	<p>
+		This is a special case so that developers can alert SilverStripe Operations Team when a check fails. This means
+		if the alert is received by ops, they will look into the problem when the alert is received. This should be used
+		<strong>only</strong> for critical checks that concern the uptime of the site.
+	</p>
+
+	<p>
+		In order to use the ops contact and have it be effective, the check needs to be approved by the SilverStripe
+		Operations Team. If you commit the check and deploy it, the check will be created but be paused by default. In
+		order to get it started, please submit a new request to the
+		<a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a>.
+	</p>
+
+</div>

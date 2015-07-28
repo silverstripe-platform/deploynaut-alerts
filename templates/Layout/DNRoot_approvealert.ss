@@ -1,16 +1,18 @@
-<h2>$CurrentProject.Title</h2>
+<div class="content page-header">
+	<ol class="breadcrumb">
+		<li><a href="naut/project/$CurrentProject.Name">$CurrentProject.Title</a></li>
+	</ol>
 
-<% if $CurrentProject %>
+	<h1 class="page-heading">Alerts</h1>
+
 	<ul class="nav nav-tabs">
-		<% loop $CurrentProject.Menu %>
-		<li<% if $IsActive %> class="active"<% end_if %>><a href="$Link">$Title</a></li>
-		<% end_loop %>
+		<li><a href="$CurrentProject.Link/alerts">Overview</a></li>
+		<li class="active"><a href="$CurrentProject.Link/approvealert">Alert approval form</a></li>
 	</ul>
-	<ul class="nav level-2">
-		<li><a href="naut/project/$CurrentProject.Name/approvealert">Alert approval form</a></li>
-	</ul>
-<% end_if %>
+</div>
 
-<p>You can use this form to request approval for an alert that has been configured with "ops" as a contact.</p>
+<div class="content">
+	<p>You can use this form to request approval for an alert that has been configured with "ops" as a contact.</p>
 
-$AlertApprovalForm
+	$AlertApprovalForm
+</div>
