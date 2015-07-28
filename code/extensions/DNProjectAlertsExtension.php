@@ -16,10 +16,14 @@ class DNProjectAlertsExtension extends DataExtension {
 	}
 
 	public function updateMenu($list) {
+		$controller = Controller::curr();
+		$actionType = $controller->getField('CurrentActionType');
+
 		$list->push(new ArrayData(array(
 			'Link' => sprintf('naut/project/%s/alerts', $this->owner->Name),
 			'Title' => 'Alerts',
-			'IsActive' => $this->owner->isCurrent() && Controller::curr()->getAction() == 'alerts'
+			'IsCurrent' => $this->owner->isCurrent() && $controller->getAction() == 'alerts',
+			'IsSection' => $this->owner->isCurrent() && $actionType == DNRootAlertsExtension::ACTION_ALERT
 		)));
 	}
 

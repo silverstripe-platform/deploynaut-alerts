@@ -7,6 +7,12 @@ class DNRootAlertsExtension extends Extension {
 		'AlertApprovalForm'
 	);
 
+	const ACTION_ALERT = 'alert';
+
+	private static $action_types = array(
+		self::ACTION_ALERT
+	);
+
 	private static $dependencies = array(
 		'alertService' => '%$AlertService'
 	);
@@ -16,6 +22,8 @@ class DNRootAlertsExtension extends Extension {
 	}
 
 	public function alerts(SS_HTTPRequest $request) {
+		$this->owner->setCurrentActionType(self::ACTION_ALERT);
+
 		$project = $this->getCurrentProject();
 		if(!$project) {
 			return new SS_HTTPResponse("Project '" . Convert::raw2xml($request->latestParam('Project')) . "' not found.", 404);
@@ -28,6 +36,8 @@ class DNRootAlertsExtension extends Extension {
 	}
 
 	public function approvealert(SS_HTTPRequest $request) {
+		$this->owner->setCurrentActionType(self::ACTION_ALERT);
+
 		$project = $this->getCurrentProject();
 		if(!$project) {
 			return new SS_HTTPResponse("Project '" . Convert::raw2xml($request->latestParam('Project')) . "' not found.", 404);
@@ -56,6 +66,8 @@ class DNRootAlertsExtension extends Extension {
 	}
 
 	public function doAlertApprovalForm($data, $form, $request) {
+		$this->owner->setCurrentActionType(self::ACTION_ALERT);
+
 		$project = $this->owner->DNProjectList()->filter('ID', $data['ProjectID'])->first();
 
 		if(!($project && $project->exists())) {
