@@ -12,7 +12,14 @@
 </div>
 
 <div class="content">
-	<p>You can use this form to request approval for an alert that has been configured with "ops" as a contact.</p>
+	<div class="text-center">
+		<h2>Alerts Approval</h2>
+		<p>
+			You can use this form to request approval for an alert that has been configured with "ops" as a contact.
+		</p>
+	</div>
 
-	$AlertApprovalForm
+	<div class="col-md-offset-3 col-md-6 alerts-approval-form">
+		$AlertApprovalForm
+	</div>
 </div>
