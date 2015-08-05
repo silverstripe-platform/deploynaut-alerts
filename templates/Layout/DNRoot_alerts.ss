@@ -1,14 +1,14 @@
 <div class="content page-header">
-	<ol class="breadcrumb">
-		<li><a href="naut/project/$CurrentProject.Name">$CurrentProject.Title</a></li>
-	</ol>
+	<div class="row">
+		<div class="col-md-9">
+			<% include Breadcrumb %>
 
-	<h1 class="page-heading">Alerts</h1>
-
-	<ul class="nav nav-tabs">
-		<li class="active"><a href="$CurrentProject.Link/alerts">Overview</a></li>
-		<li><a href="$CurrentProject.Link/approvealert">Alert approval form</a></li>
-	</ul>
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="$CurrentProject.Link/alerts">Overview</a></li>
+				<li><a href="$CurrentProject.Link/approvealert">Alert approval form</a></li>
+			</ul>
+		</div>
+	</div>
 </div>
 
 <div class="content">
