@@ -45,12 +45,12 @@ class AlertService {
 		try {
 			$config = Yaml::parse($content);
 		} catch(Symfony\Component\Yaml\Exception\ParseException $e) {
-			$log->write(sprintf('ERROR: Could not parse .alerts.yml. %s', $e->getMessage()));
+			$log->write(sprintf('WARNING: Failed to configure alerts. Could not parse .alerts.yml. %s', $e->getMessage()));
 			return false;
 		}
 
 		if(!isset($config['alerts'])) {
-			$log->write('ERROR: Misconfigured .alerts.yml. Missing "alerts" key.');
+			$log->write('WARNING: Failed to configure alerts. Misconfigured .alerts.yml. Missing "alerts" key.');
 			return false;
 		}
 
@@ -63,7 +63,7 @@ class AlertService {
 				$log->write(sprintf('Configuring alert "%s" from .alerts.yml', $alertName));
 			} else {
 				$log->write(sprintf(
-					'Skipping alert "%s" for environment "%s". Does not apply to this environment ("%s")',
+					'Failed to configure alert "%s" for environment "%s". Does not apply to this environment ("%s")',
 					$alertName,
 					$alertConfig['environment'],
 					$environment->Name
@@ -143,19 +143,28 @@ class AlertService {
 	public function validateAlert($name, $config, $project, $log) {
 		// validate we have an environment set for the alert
 		if(!isset($config['environment'])) {
-			$log->write(sprintf('ERROR: Misconfigured .alerts.yml. Missing "environment" key for alert "%s".', $name));
+			$log->write(sprintf(
+				'WARNING: Failed to configure alert "%s". Missing "environment" key in .alerts.yml. Skipped.',
+				$name
+			));
 			return false;
 		}
 
 		// validate we have an environmentcheck suite name to check
 		if(!isset($config['envcheck-suite'])) {
-			$log->write(sprintf('ERROR: Misconfigured .alerts.yml. Missing "envcheck-suite" key for alert "%s".', $name));
+			$log->write(sprintf(
+				'WARNING: Failed to configure alert "%s". Missing "envcheck-suite" key in .alerts.yml. Skipped.',
+				$name
+			));
 			return false;
 		}
 
 		// validate we have contacts for the alert
 		if(!isset($config['contacts'])) {
-			$log->write(sprintf('ERROR: Misconfigured .alerts.yml. Missing "contacts" key for alert "%s".', $name));
+			$log->write(sprintf(
+				'WARNING: Failed to configure alert "%s". Missing "contacts" key in .alerts.yml. Skipped.',
+				$name
+			));
 			return false;
 		}
 
@@ -166,14 +175,22 @@ class AlertService {
 
 			$contact = $project->AlertContacts()->filter('Email', $contactEmail)->first();
 			if(!($contact && $contact->exists())) {
-				$log->write(sprintf('ERROR: No such contact "%s" for alert "%s".', $contactEmail, $name));
+				$log->write(sprintf(
+					'WARNING: Failed to configure alert "%s". No such contact "%s". Skipped.',
+					$name,
+					$contactEmail
+				));
 				return false;
 			}
 		}
 
 		// validate the environment specified in the alert actually exists
 		if(!DNEnvironment::get()->filter('Name', $config['environment'])->first()) {
-			$log->write(sprintf('ERROR: Invalid environment "%s" in .alerts.yml.', $config['environment']));
+			$log->write(sprintf(
+				'WARNING: Failed to configure alert "%s". Invalid environment "%s" in .alerts.yml. Skipped.',
+				$name,
+				$config['environment']
+			));
 			return false;
 		}
 
