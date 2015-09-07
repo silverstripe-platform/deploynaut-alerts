@@ -79,8 +79,8 @@ alerts:
 	</ul>
 
 	<p>
-		Please contact the <a href="http://helpdesk.silverstripe.com">SilverStripe Operations Team</a> if you would like
-		to add another contact to the list above.
+		Please contact the <a href="http://helpdesk.silverstripe.com" target="_blank">SilverStripe Operations Team</a>
+		if you would like to add another contact to the list above.
 	</p>
 
 
