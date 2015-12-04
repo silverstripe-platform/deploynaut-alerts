@@ -8,6 +8,7 @@ class PingdomGatewayTest extends SapphireTest {
 	protected $api = null;
 
 	public function setUp() {
+		parent::setUp();
 		// mock the real api
 		$this->api = $this->getMock(
 			'\Acquia\Pingdom\PingdomApi',

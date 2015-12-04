@@ -33,7 +33,7 @@ class AlertServiceTest extends SapphireTest {
 		$service = Injector::inst()->create('SpyAlertServiceMissingEnvironmentConfig');
 		$service->sync($project, $environment, $this->log);
 
-		$this->assertContains('ERROR: Misconfigured .alerts.yml. Missing "environment" key for alert "dev-check"', $this->log->content());
+		$this->assertContains('WARNING: Failed to configure alert "dev-check". Missing "environment" key in .alerts.yml. Skipped.', $this->log->content());
 	}
 
 	public function testMissingAlertContact() {
@@ -43,7 +43,7 @@ class AlertServiceTest extends SapphireTest {
 		$service = Injector::inst()->create('SpyAlertServiceInvalidAlertContactConfig');
 		$service->sync($project, $environment, $this->log);
 
-		$this->assertContains('ERROR: No such contact "nonexistant-contact@email.com" for alert "dev-check"', $this->log->content());
+		$this->assertContains('WARNING: Failed to configure alert "dev-check". No such contact "nonexistant-contact@email.com". Skipped.', $this->log->content());
 	}
 
 	public function testSkipAlertsForNonApplicableEnvironment() {
@@ -63,8 +63,7 @@ class AlertServiceTest extends SapphireTest {
 		$service->sync($project, $environment, $this->log);
 
 		$this->assertNotContains('Failed to configure alert "dev-check"', $this->log->content());
-		$this->assertNotContains('Failed to configure alert "health-check"', $this->log->content());
-		$this->assertContains('Skipping alert "health-check" for environment "prod". Does not apply to this environment ("uat")', $this->log->content());
+		$this->assertContains('Failed to configure alert "health-check" for environment "prod". Does not apply to this environment ("uat")', $this->log->content());
 		$this->assertContains('Successfully configured alert "dev-check"', $this->log->content());
 	}
 
@@ -87,8 +86,7 @@ class AlertServiceTest extends SapphireTest {
 		$service->sync($project, $environment, $this->log);
 
 		$this->assertNotContains('Failed to configure alert "health-check"', $this->log->content());
-		$this->assertNotContains('Failed to configure alert "dev-check"', $this->log->content());
-		$this->assertContains('Skipping alert "dev-check" for environment "uat". Does not apply to this environment ("prod")', $this->log->content());
+		$this->assertContains('Failed to configure alert "dev-check" for environment "uat". Does not apply to this environment ("prod")', $this->log->content());
 		$this->assertContains('Successfully configured alert "health-check". If this is newly configured, the alert will be paused. Please contact SilverStripe Operations Team to have it approved', $this->log->content());
 	}
 
@@ -115,7 +113,7 @@ class AlertServiceTest extends SapphireTest {
 		$result = $service->sync($project, $environment, $this->log);
 
 		$this->assertFalse($result);
-		$this->assertContains('ERROR: Misconfigured .alerts.yml. Missing "alerts" key.', $this->log->content());
+		$this->assertContains('WARNING: Failed to configure alerts. Misconfigured .alerts.yml. Missing "alerts" key.', $this->log->content());
 	}
 
 	public function testConfigMalformed() {
@@ -128,7 +126,7 @@ class AlertServiceTest extends SapphireTest {
 		$result = $service->sync($project, $environment, $this->log);
 
 		$this->assertFalse($result);
-		$this->assertContains('ERROR: Could not parse .alerts.yml. Unable to parse at line 1 (near "asdkjahr23434564uwerea").', $this->log->content());
+		$this->assertContains('WARNING: Failed to configure alerts. Could not parse .alerts.yml. Unable to parse at line 1 (near "asdkjahr23434564uwerea").', $this->log->content());
 	}
 
 }
