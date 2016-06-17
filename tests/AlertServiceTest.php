@@ -19,7 +19,6 @@ class AlertServiceTest extends SapphireTest {
 
 		$this->mockGateway = $this->getMock('PingdomGateway');
 
-
 		$logFile = 'test-logs';
 		touch(DEPLOYNAUT_LOG_PATH . '/' . $logFile);
 		file_put_contents(DEPLOYNAUT_LOG_PATH . '/' . $logFile, '');
@@ -31,7 +30,7 @@ class AlertServiceTest extends SapphireTest {
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
 
 		$service = Injector::inst()->create('SpyAlertServiceMissingEnvironmentConfig');
-		$service->sync($project, $environment, $this->log);
+		$result = $service->sync($environment, 'master', $this->log, $project);
 
 		$this->assertContains('WARNING: Failed to configure alert "dev-check". Missing "environment" key in .alerts.yml. Skipped.', $this->log->content());
 	}
@@ -41,7 +40,7 @@ class AlertServiceTest extends SapphireTest {
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
 
 		$service = Injector::inst()->create('SpyAlertServiceInvalidAlertContactConfig');
-		$service->sync($project, $environment, $this->log);
+		$result = $service->sync($environment, 'master', $this->log, $project);
 
 		$this->assertContains('WARNING: Failed to configure alert "dev-check". No such contact "nonexistant-contact@email.com". Skipped.', $this->log->content());
 	}
@@ -59,8 +58,8 @@ class AlertServiceTest extends SapphireTest {
 
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
 		$service->setGateway($this->mockGateway);
-
-		$service->sync($project, $environment, $this->log);
+		
+		$result = $service->sync($environment, 'master', $this->log, $project);
 
 		$this->assertNotContains('Failed to configure alert "dev-check"', $this->log->content());
 		$this->assertContains('Failed to configure alert "health-check" for environment "prod". Does not apply to this environment ("uat")', $this->log->content());
@@ -83,7 +82,7 @@ class AlertServiceTest extends SapphireTest {
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
 		$service->setGateway($this->mockGateway);
 
-		$service->sync($project, $environment, $this->log);
+		$result = $service->sync($environment, 'master', $this->log, $project);
 
 		$this->assertNotContains('Failed to configure alert "health-check"', $this->log->content());
 		$this->assertContains('Failed to configure alert "dev-check" for environment "uat". Does not apply to this environment ("prod")', $this->log->content());
@@ -97,7 +96,7 @@ class AlertServiceTest extends SapphireTest {
 		$service = Injector::inst()->create('TestAlertService');
 		$service->setGateway($this->mockGateway);
 
-		$result = $service->sync($project, $environment, $this->log);
+		$result = $service->sync($environment, 'master', $this->log, $project);
 
 		$this->assertFalse($result);
 		$this->assertContains('Skipping alert configuration. No .alerts.yml found in site code', $this->log->content());
@@ -110,7 +109,7 @@ class AlertServiceTest extends SapphireTest {
 		$service = Injector::inst()->create('SpyAlertServiceMissingAlerts');
 		$service->setGateway($this->mockGateway);
 
-		$result = $service->sync($project, $environment, $this->log);
+		$result = $service->sync($environment, 'master', $this->log, $project);
 
 		$this->assertFalse($result);
 		$this->assertContains('WARNING: Failed to configure alerts. Misconfigured .alerts.yml. Missing "alerts" key.', $this->log->content());
@@ -123,7 +122,7 @@ class AlertServiceTest extends SapphireTest {
 		$service = Injector::inst()->create('SpyAlertServiceMalformedConfig');
 		$service->setGateway($this->mockGateway);
 
-		$result = $service->sync($project, $environment, $this->log);
+		$result = $service->sync($environment, 'master', $this->log, $project);
 
 		$this->assertFalse($result);
 		$this->assertContains('WARNING: Failed to configure alerts. Could not parse .alerts.yml. Unable to parse at line 1 (near "asdkjahr23434564uwerea").', $this->log->content());

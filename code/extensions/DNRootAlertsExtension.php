@@ -94,8 +94,8 @@ class DNRootAlertsExtension extends Extension {
 		return $this->owner->redirectBack();
 	}
 
-	public function AlertsConfigContent() {
-		return $this->alertService->getAlertsConfigContent($this->getCurrentProject());
+	public function AlertsConfigContent($sha) {
+		return $this->alertService->getAlertsConfigContent($this->getCurrentProject(), $sha);
 	}
 
 }
