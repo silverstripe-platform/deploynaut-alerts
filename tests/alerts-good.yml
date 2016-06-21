@@ -1,11 +1,11 @@
 alerts:
   dev-check:
-    envcheck-suite: "check"
+    check_url: "dev/check/check"
     environment: "uat"
     contacts:
       - "joe@email.com"
   health-check:
-    envcheck-suite: "health"
+    check_url: "dev/check/health"
     environment: "prod"
     contacts:
       - "joe@email.com"

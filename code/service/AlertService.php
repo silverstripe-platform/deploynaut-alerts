@@ -11,10 +11,12 @@ class AlertService {
 	/**
 	 * Output the raw content of the .alerts.yml file from HEAD of a bare repository.
 	 * @param DNProject $project
+	 * @param string $sha
 	 * @return null|string
 	 */
-	public function getAlertsConfigContent($project) {
-		$process = new Process('git show --format=raw HEAD:.alerts.yml', $project->getLocalCVSPath());
+	public function getAlertsConfigContent($project, $sha) {
+		$command = sprintf('git show --format=raw %s:.alerts.yml', $sha);
+		$process = new Process($command, $project->getLocalCVSPath());
 		$process->run();
 
 		// we don't care if the command wasn't successful, which would be caused by a missing .alerts.yml
@@ -29,14 +31,15 @@ class AlertService {
 	/**
 	 * Given a project and environment, sync the alerts configuration with the alerts gateway.
 	 *
-	 * @param DNProject $project
 	 * @param DNEnvironment $environment
+	 * @param string $sha
 	 * @param DeploynautLogFile $log
+	 * @param DNProject $project
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
-	public function sync($project, $environment, $log) {
-		$content = $this->getAlertsConfigContent($project);
+	public function sync($environment, $sha, $log, $project) {
+		$content = $this->getAlertsConfigContent($project, $sha);
 		if(!$content) {
 			$log->write('Skipping alert configuration. No .alerts.yml found in site code.');
 			return false;
@@ -103,7 +106,7 @@ class AlertService {
 
 			try {
 				$result = $this->gateway->addOrModifyAlert(
-					sprintf('%s/dev/check/%s', $environment->URL, $alertConfig['envcheck-suite']),
+					sprintf('%s/%s', $environment->URL, $alertConfig['check_url']),
 					$contacts,
 					5, // the check interval in minutes
 					$paused
@@ -151,9 +154,9 @@ class AlertService {
 		}
 
 		// validate we have an environmentcheck suite name to check
-		if(!isset($config['envcheck-suite'])) {
+		if(!isset($config['check_url'])) {
 			$log->write(sprintf(
-				'WARNING: Failed to configure alert "%s". Missing "envcheck-suite" key in .alerts.yml. Skipped.',
+				'WARNING: Failed to configure alert "%s". Missing "check_url" key in .alerts.yml. Skipped.',
 				$name
 			));
 			return false;

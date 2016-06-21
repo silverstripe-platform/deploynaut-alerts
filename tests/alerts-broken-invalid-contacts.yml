@@ -1,6 +1,6 @@
 alerts:
   dev-check:
-    envcheck-suite: "check"
+    check_url: "dev/check/check"
     environment: "prod"
     contacts:
       - "nonexistant-contact@email.com"

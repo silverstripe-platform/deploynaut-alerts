@@ -1,5 +1,5 @@
 alerts:
   dev-check:
-    envcheck-suite: "check"
+    check_url: "dev/check/check"
     contacts:
       - "joe@email.com"

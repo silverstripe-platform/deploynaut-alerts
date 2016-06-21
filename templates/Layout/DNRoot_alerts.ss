@@ -13,19 +13,15 @@
 
 <div class="content">
 
-	<% if $AlertsConfigContent %>
-		<h3>Currently configured alerts</h3>
-		<pre>$AlertsConfigContent</pre>
+	<% if $AlertsConfigContent(master) %>
+		<h3>Currently configured alerts on master branch</h3>
+		<pre>$AlertsConfigContent(master)</pre>
 	<% end_if %>
 
 	<h3>Configuring alerts</h3>
 
 	<p>
-		Alerts are sent when a check against an
-		<a href="https://github.com/silverstripe-labs/silverstripe-environmentcheck/">environmentcheck module suite</a>
-		fails with a bad HTTP response status. You configure these checks by placing a <code>.alerts.yml</code> file in
-		the root of your site code.
-	</p>
+		Alerts are sent when a check fails with a non-200 HTTP response status. You configure these checks by placing a <code>.alerts.yml</code> file in the root of your site code.
 
 	<p>
 		Once the file is committed, you can deploy the code and the alerts will be configured at the end of the deployment.
@@ -41,12 +37,12 @@
 <pre class="collapse" id="alertExample">
 alerts:
   dev-check:
-    envcheck-suite: "check"
+    check_url: "dev/check"
     environment: "prod"
     contacts:
       - "joe@email.com"
   health-check:
-    envcheck-suite: "health"
+    check_url: "dev/health"
     environment: "prod"
     contacts:
       - "joe@email.com"
@@ -79,10 +75,8 @@ alerts:
 	</ul>
 
 	<p>
-		Please contact the <a href="http://helpdesk.silverstripe.com" target="_blank">SilverStripe Operations Team</a>
-		if you would like to add another contact to the list above.
+		Please raise a <a href="http://helpdesk.silverstripe.com" target="_blank">helpdesk</a> ticket and advise us which email addresses should receive notifications.
 	</p>
-
 
 	<h3>Using "ops" as a contact</h3>
 
