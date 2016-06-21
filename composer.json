@@ -3,7 +3,7 @@
 	"description": "deploynaut uptime alerts",
 	"type": "silverstripe-module",
 	"require": {
-		"acquia/pingdom-api": "dev-master",
+		"acquia/pingdom-api": "notification-contacts-dev",
 		"symfony/yaml": "2.7.*@dev"
 	},
 	"extra": {
