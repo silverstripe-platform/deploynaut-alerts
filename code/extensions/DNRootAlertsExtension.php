@@ -1,21 +1,21 @@
 <?php
 class DNRootAlertsExtension extends Extension {
 
-	private static $allowed_actions = array(
+	private static $allowed_actions = [
 		'alerts',
 		'approvealert',
 		'AlertApprovalForm'
-	);
+	];
 
 	const ACTION_ALERT = 'alert';
 
-	private static $action_types = array(
+	private static $action_types = [
 		self::ACTION_ALERT
-	);
+	];
 
-	private static $dependencies = array(
+	private static $dependencies = [
 		'alertService' => '%$AlertService'
-	);
+	];
 
 	public function getCurrentProject() {
 		return $this->owner->DNProjectList()->filter('Name', $this->owner->getRequest()->latestParam('Project'))->first();
@@ -29,10 +29,10 @@ class DNRootAlertsExtension extends Extension {
 			return new SS_HTTPResponse("Project '" . Convert::raw2xml($request->latestParam('Project')) . "' not found.", 404);
 		}
 
-		return $this->owner->customise(array(
+		return $this->owner->customise([
 			'Title' => 'Alerts',
 			'CurrentProject' => $project,
-		))->render();
+		])->render();
 	}
 
 	public function approvealert(SS_HTTPRequest $request) {
@@ -43,10 +43,10 @@ class DNRootAlertsExtension extends Extension {
 			return new SS_HTTPResponse("Project '" . Convert::raw2xml($request->latestParam('Project')) . "' not found.", 404);
 		}
 
-		return $this->owner->customise(array(
+		return $this->owner->customise([
 			'Title' => 'Alert approval',
 			'CurrentProject' => $project,
-		))->render();
+		])->render();
 	}
 
 	public function AlertApprovalForm() {
@@ -59,10 +59,10 @@ class DNRootAlertsExtension extends Extension {
 			new HiddenField('ProjectID', '', $project ? $project->ID : '')
 		), new FieldList(
 			new FormAction('doAlertApprovalForm', 'Submit')
-		), new RequiredFields(array(
+		), new RequiredFields([
 			'ProjectID',
 			'AlertName'
-		)));
+		]));
 	}
 
 	public function doAlertApprovalForm($data, $form, $request) {
@@ -85,8 +85,8 @@ class DNRootAlertsExtension extends Extension {
 		$email->setSubject('Deploynaut approve alert request');
 		$email->setTemplate('ApproveAlertEmail');
 		$email->populateTemplate($data);
-		$email->populateTemplate(array('Submitter' => Member::currentUser(), 'Project' => $project));
-		$email->populateTemplate(array('ProjectAlertsLink' => sprintf('%s/naut/project/%s/alerts', BASE_URL, $project->Name)));
+		$email->populateTemplate(['Submitter' => Member::currentUser(), 'Project' => $project]);
+		$email->populateTemplate(['ProjectAlertsLink' => sprintf('%s/naut/project/%s/alerts', BASE_URL, $project->Name)]);
 		$email->send();
 
 		$form->sessionMessage('Thank you, your request has been successfully submitted.', 'good');

@@ -12,8 +12,8 @@ class AlertServiceTest extends SapphireTest {
 
 		$api = $this->getMock(
 			'\Acquia\Pingdom\PingdomApi',
-			array('request'), // only mock the request method
-			array("user@test.com", "password", "token") // constructor arguments
+			['request'], // only mock the request method
+			["user@test.com", "password", "token"] // constructor arguments
 		);
 		Injector::inst()->registerService($api, 'PingdomService');
 
@@ -51,9 +51,9 @@ class AlertServiceTest extends SapphireTest {
 
 		$this->mockGateway->expects($this->once())
 			->method('addOrModifyAlert')
-			->with('http://mysite-uat.com/dev/check/check', array(
-				array('name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com', 'cellphone' => '21123456', 'countrycode' => '64', 'countryiso' => 'NZ'),
-			), 5, false)
+			->with('http://mysite-uat.com/dev/check/check', [
+				['name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com', 'cellphone' => '21123456', 'countrycode' => '64', 'countryiso' => 'NZ'],
+			], 5, false)
 			->will($this->returnValue(true));
 
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
@@ -72,11 +72,11 @@ class AlertServiceTest extends SapphireTest {
 
 		$this->mockGateway->expects($this->once())
 			->method('addOrModifyAlert')
-			->with('http://mysite.com/dev/check/health', array(
-				array('name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com', 'cellphone' => '21123456', 'countrycode' => '64', 'countryiso' => 'NZ'),
-				array('name' => 'Jane Bloggs <jane@email.com>', 'email' => 'jane@email.com', 'cellphone' => null, 'countrycode' => null, 'countryiso' => null),
-				array('name' => sprintf('SilverStripe Operations Team <%s>', DEPLOYNAUT_OPS_EMAIL), 'email' => DEPLOYNAUT_OPS_EMAIL)
-			), 5, true)
+			->with('http://mysite.com/dev/check/health', [
+				['name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com', 'cellphone' => '21123456', 'countrycode' => '64', 'countryiso' => 'NZ'],
+				['name' => 'Jane Bloggs <jane@email.com>', 'email' => 'jane@email.com', 'cellphone' => null, 'countrycode' => null, 'countryiso' => null],
+				['name' => sprintf('SilverStripe Operations Team <%s>', DEPLOYNAUT_OPS_EMAIL), 'email' => DEPLOYNAUT_OPS_EMAIL]
+			], 5, true)
 			->will($this->returnValue(true));
 
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
@@ -132,7 +132,7 @@ class AlertServiceTest extends SapphireTest {
 
 class TestAlertService extends AlertService {
 
-	public function getAlertsConfigContent($project) {
+	public function getAlertsConfigContent($project, $sha) {
 		return null;
 	}
 
@@ -144,7 +144,7 @@ class TestAlertService extends AlertService {
 
 class SpyAlertServiceMalformedConfig extends TestAlertService {
 
-	public function getAlertsConfigContent($project) {
+	public function getAlertsConfigContent($project, $sha) {
 		return file_get_contents(BASE_PATH . '/deploynaut-alerts/tests/alerts-malformed.yml');
 	}
 
@@ -152,7 +152,7 @@ class SpyAlertServiceMalformedConfig extends TestAlertService {
 
 class SpyAlertServiceMissingAlerts extends TestAlertService {
 
-	public function getAlertsConfigContent($project) {
+	public function getAlertsConfigContent($project, $sha) {
 		return file_get_contents(BASE_PATH . '/deploynaut-alerts/tests/alerts-missing.yml');
 	}
 
@@ -160,7 +160,7 @@ class SpyAlertServiceMissingAlerts extends TestAlertService {
 
 class SpyAlertServiceMissingEnvironmentConfig extends TestAlertService {
 
-	public function getAlertsConfigContent($project) {
+	public function getAlertsConfigContent($project, $sha) {
 		return file_get_contents(BASE_PATH . '/deploynaut-alerts/tests/alerts-broken-missing-environment.yml');
 	}
 
@@ -168,7 +168,7 @@ class SpyAlertServiceMissingEnvironmentConfig extends TestAlertService {
 
 class SpyAlertServiceInvalidAlertContactConfig extends TestAlertService {
 
-	public function getAlertsConfigContent($project) {
+	public function getAlertsConfigContent($project, $sha) {
 		return file_get_contents(BASE_PATH . '/deploynaut-alerts/tests/alerts-broken-invalid-contacts.yml');
 	}
 
@@ -176,7 +176,7 @@ class SpyAlertServiceInvalidAlertContactConfig extends TestAlertService {
 
 class SpyAlertServiceGoodConfig extends TestAlertService {
 
-	public function getAlertsConfigContent($project) {
+	public function getAlertsConfigContent($project, $sha) {
 		return file_get_contents(BASE_PATH . '/deploynaut-alerts/tests/alerts-good.yml');
 	}
 

@@ -4,9 +4,9 @@ use Symfony\Component\Process\Process;
 
 class AlertService {
 
-	private static $dependencies = array(
+	private static $dependencies = [
 		'gateway' => '%$PingdomGateway'
-	);
+	];
 
 	/**
 	 * Output the raw content of the .alerts.yml file from HEAD of a bare repository.
@@ -76,7 +76,7 @@ class AlertService {
 				continue;
 			}
 
-			$contacts = array();
+			$contacts = [];
 			$paused = false;
 
 			foreach($alertConfig['contacts'] as $contactEmail) {
@@ -86,21 +86,21 @@ class AlertService {
 					$paused = true;
 
 					// @todo add the ops 24/7 phone number here?
-					$contacts[] = array(
+					$contacts[] = [
 						'name' => sprintf('SilverStripe Operations Team <%s>', DEPLOYNAUT_OPS_EMAIL),
 						'email' => DEPLOYNAUT_OPS_EMAIL
-					);
+					];
 				} else {
 					// this should never return false, as validateAlert() checks that it exists prior
 					$contact = $project->AlertContacts()->filter('Email', $contactEmail)->first();
 
-					$contacts[] = array(
+					$contacts[] = [
 						'name' => sprintf('%s <%s>', $contact->Name, $contact->Email),
 						'email' => $contact->Email,
 						'cellphone' => $contact->SMSCellphone,
 						'countrycode' => $contact->SMSCountryCode,
 						'countryiso' => $contact->SMSCountryISO
-					);
+					];
 				}
 			}
 

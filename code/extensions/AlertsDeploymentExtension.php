@@ -1,9 +1,9 @@
 <?php
 class AlertsDeploymentExtension extends Extension {
 
-	private static $dependencies = array(
+	private static $dependencies = [
 		'alertService' => '%$AlertService'
-	);
+	];
 
 	/**
 	 * After a successful deployment, configure the Pingdom alerts
