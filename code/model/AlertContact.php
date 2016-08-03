@@ -1,22 +1,22 @@
 <?php
 class AlertContact extends DataObject {
 
-	private static $db = array(
+	private static $db = [
 		'Name' => 'Varchar(255)',
 		'Email' => 'Varchar(255)',
 		'SMSCountryCode' => 'Varchar(2)',
 		'SMSCellphone' => 'Varchar(100)',
 		'SMSCountryISO' => 'Varchar(2)'
-	);
+	];
 
-	private static $has_one = array(
+	private static $has_one = [
 		'Project' => 'DNProject'
-	);
+	];
 
-	private static $summary_fields = array(
+	private static $summary_fields = [
 		'Name' => 'Name',
 		'Email' => 'Email'
-	);
+	];
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();

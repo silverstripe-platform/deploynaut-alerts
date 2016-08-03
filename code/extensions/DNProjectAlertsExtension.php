@@ -1,9 +1,9 @@
 <?php
 class DNProjectAlertsExtension extends DataExtension {
 
-	private static $has_many = array(
+	private static $has_many = [
 		'AlertContacts' => 'AlertContact'
-	);
+	];
 
 	public function updateCMSFields(FieldList $fields) {
 		$field = new GridField(
@@ -19,12 +19,12 @@ class DNProjectAlertsExtension extends DataExtension {
 		$controller = Controller::curr();
 		$actionType = $controller->getField('CurrentActionType');
 
-		$list->push(new ArrayData(array(
+		$list->push(new ArrayData([
 			'Link' => sprintf('naut/project/%s/alerts', $this->owner->Name),
 			'Title' => 'Alerts',
 			'IsCurrent' => $this->owner->isSection() && $controller->getAction() == 'alerts',
 			'IsSection' => $this->owner->isSection() && $actionType == DNRootAlertsExtension::ACTION_ALERT
-		)));
+		]));
 	}
 
 }

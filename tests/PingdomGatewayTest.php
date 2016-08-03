@@ -12,21 +12,21 @@ class PingdomGatewayTest extends SapphireTest {
 		// mock the real api
 		$this->api = $this->getMock(
 			'\Acquia\Pingdom\PingdomApi',
-			array('request'), // only mock the request method
-			array("user@test.com", "password", "token") // constructor arguments
+			['request'], // only mock the request method
+			["user@test.com", "password", "token"] // constructor arguments
 		);
 
 		Injector::inst()->registerService($this->api, 'PingdomService');
 	}
 
 	public function testGetUsers() {
-		$result = (object) array('contacts' => array(
-			(object) array(
+		$result = (object) ['contacts' => [
+			(object) [
 				'email' => 'contact@test.com',
 				'id' => 578657,
 				'name' => 'Test Contact (u)',
-			)
-		));
+			]
+		]];
 
 		$this->api->expects($this->once())
 			->method('request')
@@ -40,18 +40,18 @@ class PingdomGatewayTest extends SapphireTest {
 	}
 
 	public function testAddContact() {
-		$result = (object) array('contacts' => array(
-			(object) array(
+		$result = (object) ['contacts' => [
+			(object) [
 				'email' => 'contact@test.com',
 				'id' => 578657,
 				'name' => 'Test Contact (u)',
-			)
-		));
+			]
+		]];
 
-		$newUser = (object) array( 'contact' => (object)array(
+		$newUser = (object) [ 'contact' => (object)[
 			'id' => 10961547,
 			'name' => 'random user'
-		));
+		]];
 
 		$this->api->expects($this->at(0))
 			->method('request')
@@ -63,10 +63,10 @@ class PingdomGatewayTest extends SapphireTest {
 			->with($this->equalTo('POST'), $this->equalTo('notification_contacts'))
 			->will($this->returnValue($newUser));
 
-		$newContact = array(
+		$newContact = [
 			'name' => 'random user',
 			'email' => 'random@silverstripe.com',
-		);
+		];
 
 		PingdomGateway::create()->addOrModifyContact($newContact);
 	}
@@ -77,35 +77,35 @@ class PingdomGatewayTest extends SapphireTest {
 
 		$this->setExpectedException('RuntimeException');
 
-		PingdomGateway::create()->addOrModifyContact(array('name' => 'random user'));
+		PingdomGateway::create()->addOrModifyContact(['name' => 'random user']);
 	}
 
 	public function testAddContactNoNameUsesEmail() {
 
-		$result = (object) array('contacts' => array());
+		$result = (object) ['contacts' => []];
 
 		$this->api->expects($this->at(0))
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
 			->will($this->returnValue($result));
 
-		$newUser = (object) array( 'contact' => (object)array(
+		$newUser = (object) [ 'contact' => (object)[
 			'id' => 10961547,
 			'name' => 'random@silverstripe.com'
-		));
+		]];
 
 		// expect that name is set to the email address
 		$this->api->expects($this->at(1))
 			->method('request')
-			->with($this->equalTo('POST'), $this->equalTo('notification_contacts'), $this->equalTo(array(
+			->with($this->equalTo('POST'), $this->equalTo('notification_contacts'), $this->equalTo([
 				'email' => 'random@silverstripe.com',
 				'name' => 'random@silverstripe.com',
-			)))
+			]))
 			->will($this->returnValue($newUser));
 
-		$newContact = array(
+		$newContact = [
 			'email' => 'random@silverstripe.com',
-		);
+		];
 
 		PingdomGateway::create()->addOrModifyContact($newContact);
 
@@ -113,13 +113,13 @@ class PingdomGatewayTest extends SapphireTest {
 
 	public function testUpdateContact() {
 
-		$result = (object) array('contacts' => array(
-			(object) array(
+		$result = (object) ['contacts' => [
+			(object) [
 				'email' => 'contact@test.com',
 				'id' => 578657,
 				'name' => 'Test Contact (u)',
-			)
-		));
+			]
+		]];
 
 		$this->api->expects($this->at(0))
 			->method('request')
@@ -130,12 +130,12 @@ class PingdomGatewayTest extends SapphireTest {
 		$this->api->expects($this->at(1))
 			->method('request')
 			->with($this->equalTo('PUT'), $this->equalTo('notification_contacts/578657'))
-			->will($this->returnValue((object)array('message' => 'Modification of notification contact was successful!')));
+			->will($this->returnValue((object)['message' => 'Modification of notification contact was successful!']));
 
-		$contact = array(
+		$contact = [
 			'name' => 'Updated Name (u)',
 			'email' => 'contact@test.com'
-		);
+		];
 
 		PingdomGateway::create()->addOrModifyContact($contact);
 	}
@@ -143,55 +143,55 @@ class PingdomGatewayTest extends SapphireTest {
 	public function testParamsFromURL() {
 		$pw = PingdomGateway::create();
 
-		$this->assertEquals($pw ->paramsFromURL("https://test.com/endpoint"), array(
+		$this->assertEquals($pw ->paramsFromURL("https://test.com/endpoint"), [
 			"host" => "test.com",
 			"url" => '/endpoint',
 			"encryption" => true,
-		));
+		]);
 
-		$this->assertEquals($pw ->paramsFromURL("https://test.com//dev/check"), array(
+		$this->assertEquals($pw ->paramsFromURL("https://test.com//dev/check"), [
 			"host" => "test.com",
 			"url" => '/dev/check',
 			"encryption" => true,
-		));
+		]);
 
-		$this->assertEquals($pw->paramsFromURL("http://test.nu/endpoint2"), array(
+		$this->assertEquals($pw->paramsFromURL("http://test.nu/endpoint2"), [
 			"host" => "test.nu",
 			"url" => '/endpoint2',
 			"encryption" => false,
-		));
+		]);
 
-		$this->assertEquals($pw->paramsFromURL("https://test.net/"), array(
+		$this->assertEquals($pw->paramsFromURL("https://test.net/"), [
 			"host" => "test.net",
 			"url" => '/',
 			"encryption" => true,
-		));
+		]);
 
-		$this->assertEquals($pw->paramsFromURL("https://test.net/"),  array(
+		$this->assertEquals($pw->paramsFromURL("https://test.net/"),  [
 			"host" => "test.net",
 			"url" => '/',
 			"encryption" => true,
-		));
+		]);
 
-		$this->assertEquals($pw->paramsFromURL("ftp://test.net/"), array());
+		$this->assertEquals($pw->paramsFromURL("ftp://test.net/"), []);
 
-		$this->assertEquals($pw->paramsFromURL("laosdlasdo"), array());
+		$this->assertEquals($pw->paramsFromURL("laosdlasdo"), []);
 
-		$this->assertEquals($pw->paramsFromURL("http://test.com/hello?test"), array(
+		$this->assertEquals($pw->paramsFromURL("http://test.com/hello?test"), [
 			"host" => "test.com",
 			"url" => '/hello?test',
 			"encryption" => false
-		));
+		]);
 	}
 
 	public function testGetNotificationContact() {
-		$result = (object) array('contacts' => array(
-			(object) array(
+		$result = (object) ['contacts' => [
+			(object) [
 				'email' => 'contact@test.com',
 				'id' => 231231,
 				'name' => 'Test Contact (u)',
-			)
-		));
+			]
+		]];
 		$this->api->expects($this->once())
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
@@ -203,13 +203,13 @@ class PingdomGatewayTest extends SapphireTest {
 	}
 
 	public function testGetNotificationContactNotFound() {
-		$result = (object) array('contacts' => array(
-			(object) array(
+		$result = (object) ['contacts' => [
+			(object) [
 				'email' => 'contact@test.com',
 				'id' => 231231,
 				'name' => 'Test Contact (u)',
-			)
-		));
+			]
+		]];
 		$this->api->expects($this->once())
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
@@ -221,16 +221,16 @@ class PingdomGatewayTest extends SapphireTest {
 	}
 
 	public function testGetCheckURL() {
-		$check = (object) array(
+		$check = (object) [
 			'hostname' => 'test.com',
-			'type' => (object) array(
-				'http' => (object) array(
+			'type' => (object) [
+				'http' => (object) [
 					'encryption' => true,
 					'url' => '/dev/check/suite'
-				)
-			),
+				]
+			],
 			'encryption' => true,
-		);
+		];
 
 		$pw = PingdomGateway::create();
 		$url = $pw->getCheckURL($check);
@@ -242,13 +242,13 @@ class PingdomGatewayTest extends SapphireTest {
 	}
 
 	public function testGetCheckURLNotHTTPCheck() {
-		$check = (object) array(
+		$check = (object) [
 			'hostname' => 'test.com',
-			'type' => (object) array(
-				'tcp' => (object) array( 'port' => 80 )
-			),
+			'type' => (object) [
+				'tcp' => (object) [ 'port' => 80 ]
+			],
 			'encryption' => true,
-		);
+		];
 
 		$pw = PingdomGateway::create();
 		$url = $pw->getCheckURL($check);
@@ -256,13 +256,13 @@ class PingdomGatewayTest extends SapphireTest {
 	}
 
 	public function testRemoveNotificationContactNoDeletion() {
-		$getChecks = (object) array('contacts' => array(
-			(object) array(
+		$getChecks = (object) ['contacts' => [
+			(object) [
 				'email' => 'contact@test.com',
 				'id' => 578657,
 				'name' => 'Test Contact (u)',
-			)
-		));
+			]
+		]];
 		$this->api->expects($this->once())
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
@@ -274,13 +274,13 @@ class PingdomGatewayTest extends SapphireTest {
 	}
 
 	public function testRemoveNotificationContact() {
-		$getChecks = (object) array('contacts' => array(
-			(object) array(
+		$getChecks = (object) ['contacts' => [
+			(object) [
 				'email' => 'contact@test.com',
 				'id' => 578657,
 				'name' => 'Test Contact (u)',
-			)
-		));
+			]
+		]];
 		$this->api->expects($this->at(0))
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('notification_contacts'))
@@ -289,7 +289,7 @@ class PingdomGatewayTest extends SapphireTest {
 		$this->api->expects($this->at(1))
 			->method('request')
 			->with($this->equalTo('DELETE'), $this->equalTo('notification_contacts/578657'))
-			->will($this->returnValue((object) array('message' => 'something got deleted')));
+			->will($this->returnValue((object) ['message' => 'something got deleted']));
 
 		$pw = PingdomGateway::create();
 		$result = $pw->removeNotificationContact('contact@test.com');
@@ -297,16 +297,16 @@ class PingdomGatewayTest extends SapphireTest {
 	}
 
 	public function testGetChecks() {
-		$getChecks = (object) array('checks' => array(
-			(object) array(
+		$getChecks = (object) ['checks' => [
+			(object) [
 				'id' => 578657,
 				'name' => '/dev/check/suite',
 				'hostname' => 'test.com',
 				'resolution' => 1,
 				'type' => 'http',
 				'status' => 'UP',
-			)
-		));
+			]
+		]];
 		$this->api->expects($this->at(0))
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('checks'))
@@ -336,7 +336,7 @@ class PingdomGatewayTest extends SapphireTest {
 		$pw = PingdomGateway::create();
 		$pw->addOrModifyAlert(
 			'https://test.com/dev/check',
-			array( array('email' => 'contact@test.com') ),
+			[ ['email' => 'contact@test.com'] ],
 			5,
 			false
 		);
@@ -348,47 +348,47 @@ class PingdomGatewayTest extends SapphireTest {
 	 */
 	public function testAddOrModifyAlert() {
 
-		$getChecks = (object) array('checks' => array(
-			(object) array(
+		$getChecks = (object) ['checks' => [
+			(object) [
 				'id' => 578657,
 				'name' => '/dev/check/suite',
 				'hostname' => 'test.com',
 				'resolution' => 1,
 				'type' => 'http',
 				'status' => 'UP',
-			)
-		));
+			]
+		]];
 		$this->api->expects($this->at(0))
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('checks'))
 			->will($this->returnValue($getChecks));
 
-		$getCheck = (object) array( 'check' => (object) array(
+		$getCheck = (object) [ 'check' => (object) [
 			'id' => 578657,
 			'name' => '/dev/check/suite',
 			'hostname' => 'test.com',
 			'resolution' => 1,
-			'type' => (object) array(
-				'http' => (object) array(
+			'type' => (object) [
+				'http' => (object) [
 					'encryption' => true,
 					'url' => '/dev/check/suite'
-				)
-			),
+				]
+			],
 			'encryption' => true,
 			'status' => 'UP',
-		));
+		]];
 
 		$this->api->expects($this->at(1))
 			->method('request')
 			->with($this->equalTo('GET'), $this->equalTo('checks/578657'))
 			->will($this->returnValue($getCheck));
 
-		$postNotificationContact = (object) array(
-			'contact' => (object) array(
+		$postNotificationContact = (object) [
+			'contact' => (object) [
 				'id' => 123456,
 				'name' => 'contact name',
-			)
-		);
+			]
+		];
 
 		$this->api->expects($this->at(2))
 			->method('request')
@@ -396,9 +396,9 @@ class PingdomGatewayTest extends SapphireTest {
 			->will($this->returnValue($postNotificationContact));
 
 
-		$putCheck = (object) array(
+		$putCheck = (object) [
 			'message' => 'silly message'
-		);
+		];
 
 		$this->api->expects($this->at(3))
 			->method('request')
@@ -409,7 +409,7 @@ class PingdomGatewayTest extends SapphireTest {
 		$pw = PingdomGateway::create();
 		$success = $pw->addOrModifyAlert(
 			'https://test.com/dev/check/suite',
-			array( array('email' => 'contact@test.com', 'name' => 'contact name') ),
+			[ ['email' => 'contact@test.com', 'name' => 'contact name'] ],
 			1,
 			false
 		);

@@ -5,9 +5,9 @@ class PingdomGateway extends Object {
 	/**
 	 * @var array
 	 */
-	public static $dependencies = array(
+	public static $dependencies = [
 		'pingdom' => '%$PingdomService',
-	);
+	];
 
 	/**
 	 * @var \Acquia\Pingdom\PingdomApi
@@ -27,7 +27,7 @@ class PingdomGateway extends Object {
 	/**
 	 * @var array
 	 */
-	protected $contactCache = array();
+	protected $contactCache = [];
 
 	/**
 	 * @param bool $cached - use the in-memory cache
@@ -181,19 +181,19 @@ class PingdomGateway extends Object {
 			}
 		}
 
-		$params = array_merge($params, array(
+		$params = array_merge($params, [
 			"paused" => $pause,
 			"use_legacy_notifications" => true,
 			"sendtoemail" => true,
 			"sendtosms" => true,
 			"resolution" => $resolution,
 			"tags" => "tag1,tag2", // doesn't seems like these are getting set
-		));
+		]);
 
 		$existingCheck = $this->findExistingCheck($params);
 
 		if($existingCheck) {
-			$existingContacts = array();
+			$existingContacts = [];
 			if(property_exists($existingCheck, 'contactids')) {
 				$existingContacts = $this->getContactsForCheck($existingCheck->contactids);
 			}
@@ -234,15 +234,15 @@ class PingdomGateway extends Object {
 					}
 				}
 				if($remove) {
-					$contacts[] = array(
+					$contacts[] = [
 						'email' => $existingContact['email'],
 						'id' => $existingContact['id'],
 						'status' => 'remove',
-					);
+					];
 				}
 			}
 
-			$contactIds = array();
+			$contactIds = [];
 
 			// act on the status of the $contacts
 			foreach($contacts as $contact) {
@@ -281,7 +281,7 @@ class PingdomGateway extends Object {
 		}
 
 		// @todo(stig): garbage collect old checks, however we are going to do that..
-		$contactIds = array();
+		$contactIds = [];
 		foreach($contacts as $contact) {
 			$contactParams = $contact;
 			unset($contactParams['status']);
@@ -301,7 +301,7 @@ class PingdomGateway extends Object {
 	 * @return array;
 	 */
 	public function getContactsForCheck($contactIDs) {
-		$existingContacts = array();
+		$existingContacts = [];
 		foreach($contactIDs as $contactID) {
 			$contact = $this->getNotificationContact($contactID);
 
@@ -309,14 +309,14 @@ class PingdomGateway extends Object {
 				continue;
 			}
 
-			$existingContacts[] = array(
+			$existingContacts[] = [
 				'name' => $contact->name,
 				'email' => $contact->email,
 				'cellphone' => $contact->cellphone,
 				'countrycode' => $contact->countrycode,
 				'countryiso' => $contact->countryiso,
 				'id' => $contactID
-			);
+			];
 		}
 
 		return $existingContacts;
@@ -352,18 +352,18 @@ class PingdomGateway extends Object {
 		$pattern = "|^(https?)://([^/]*)(.*)$|";
 		preg_match($pattern, trim($url), $matches);
 		if(count($matches) != 4) {
-			return array();
+			return [];
 		}
 		$url = $matches[3];
 		// remove double // from the beginning of the url
 		if (substr($url, 0, 2) == '//') {
 			$url = substr($url, strlen(1));
 		}
-		return array(
+		return [
 			"host" => $matches[2],
 			"url" => $url,
 			"encryption" => ($matches[1] == 'https') ? true : false,
-		);
+		];
 	}
 
 }
