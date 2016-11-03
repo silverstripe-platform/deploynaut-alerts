@@ -2,6 +2,12 @@
 	"name": "silverstripe/deploynaut-alerts",
 	"description": "deploynaut uptime alerts",
 	"type": "silverstripe-module",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:silverstripe-archive/pingdom-api.git"
+		}
+	],
 	"require": {
 		"acquia/pingdom-api": "notification-contacts-dev",
 		"symfony/yaml": "2.7.*@dev"
