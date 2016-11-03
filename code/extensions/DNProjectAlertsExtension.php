@@ -27,4 +27,13 @@ class DNProjectAlertsExtension extends DataExtension {
 		]));
 	}
 
+	public function onAfterDelete() {
+		$contacts = $this->owner->AlertContacts();
+		if ($contacts && $contacts->exists()) {
+			foreach ($contacts as $contact) {
+				$contact->delete();
+			}
+		}
+	}
+
 }
