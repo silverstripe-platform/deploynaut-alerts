@@ -90,7 +90,7 @@ alerts:
 		In order to use the ops contact and have it be effective, the check needs to be approved by the SilverStripe
 		Operations Team. If you commit the check and deploy it, the check will be created but be paused by default. In
 		order to get it started, please submit a new request to the
-		<a href="naut/project/$CurrentProject.Name/approvealert">alert approval form</a>.
+		<a href="$CurrentProject.Link(approvealert)">alert approval form</a>.
 	</p>
 
 </div>

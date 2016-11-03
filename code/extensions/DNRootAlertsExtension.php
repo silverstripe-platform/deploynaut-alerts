@@ -86,7 +86,7 @@ class DNRootAlertsExtension extends Extension {
 		$email->setTemplate('ApproveAlertEmail');
 		$email->populateTemplate($data);
 		$email->populateTemplate(['Submitter' => Member::currentUser(), 'Project' => $project]);
-		$email->populateTemplate(['ProjectAlertsLink' => sprintf('%s/naut/project/%s/alerts', BASE_URL, $project->Name)]);
+		$email->populateTemplate(['ProjectAlertsLink' => sprintf('%s/%s', BASE_URL, $project->Link('alerts'))]);
 		$email->send();
 
 		$form->sessionMessage('Thank you, your request has been successfully submitted.', 'good');
