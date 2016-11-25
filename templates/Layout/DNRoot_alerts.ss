@@ -75,7 +75,7 @@ alerts:
 	</ul>
 
 	<p>
-		Please raise a <a href="http://helpdesk.silverstripe.com" target="_blank">helpdesk</a> ticket and advise us which email addresses should receive notifications.
+		Please raise a <a href="http://helpdesk.silverstripe.com">helpdesk</a> ticket and advise us which email addresses should receive notifications.
 	</p>
 
 	<h3>Using "ops" as a contact</h3>
