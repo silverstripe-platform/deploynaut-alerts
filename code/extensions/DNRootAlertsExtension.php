@@ -9,10 +9,6 @@ class DNRootAlertsExtension extends Extension {
 
 	const ACTION_ALERT = 'alert';
 
-	private static $action_types = [
-		self::ACTION_ALERT
-	];
-
 	private static $dependencies = [
 		'alertService' => '%$AlertService'
 	];
