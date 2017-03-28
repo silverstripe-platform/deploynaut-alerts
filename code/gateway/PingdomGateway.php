@@ -42,7 +42,7 @@ class PingdomGateway extends Object {
 
 	/**
 	 * @param $contactID
-	 * @return bool
+	 * @return bool|stdClass
 	 */
 	public function getNotificationContact($contactID) {
 		$contacts = $this->getNotificationContacts();
@@ -310,11 +310,11 @@ class PingdomGateway extends Object {
 			}
 
 			$existingContacts[] = [
-				'name' => $contact->name,
-				'email' => $contact->email,
-				'cellphone' => $contact->cellphone,
-				'countrycode' => $contact->countrycode,
-				'countryiso' => $contact->countryiso,
+				'name' => property_exists($contact, 'name') ? $contact->name : "",
+				'email' => property_exists($contact, 'email') ? $contact->email : "",
+				'cellphone' => property_exists($contact, 'cellphone') ? $contact->cellphone : "",
+				'countrycode' => property_exists($contact, 'countrycode') ? $contact->countrycode : "",
+				'countryiso' => property_exists($contact, 'countryiso') ? $contact->countryiso : "",
 				'id' => $contactID
 			];
 		}
