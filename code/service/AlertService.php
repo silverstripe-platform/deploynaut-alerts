@@ -1,5 +1,6 @@
 <?php
-use Symfony\Component\Yaml\Yaml;
+use \Symfony\Component\Process\Process;
+use \Symfony\Component\Yaml\Yaml;
 
 class AlertService {
 
@@ -15,7 +16,7 @@ class AlertService {
 	 */
 	public function getAlertsConfigContent($project, $sha) {
 		$command = sprintf('git show --format=raw %s:.alerts.yml', $sha);
-		$process = new AbortableProcess($command, $project->getLocalCVSPath());
+		$process = new Process($command, $project->getLocalCVSPath());
 		$process->run();
 
 		// we don't care if the command wasn't successful, which would be caused by a missing .alerts.yml
