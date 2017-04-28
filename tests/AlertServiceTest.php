@@ -3,7 +3,7 @@ class AlertServiceTest extends SapphireTest {
 
 	protected $log = null;
 
-	protected $mockGateway = null;
+	protected $gateway = null;
 
 	static $fixture_file = 'AlertServiceTest.yml';
 
@@ -15,9 +15,9 @@ class AlertServiceTest extends SapphireTest {
 			['request'], // only mock the request method
 			["user@test.com", "password", "token"] // constructor arguments
 		);
-		Injector::inst()->registerService($api, 'PingdomService');
 
-		$this->mockGateway = $this->getMock('PingdomGateway');
+		$this->gateway = $this->getMock('PingdomGateway');
+		$this->gateway->setClient($api);
 
 		$logFile = 'test-logs';
 		touch(DEPLOYNAUT_LOG_PATH . '/' . $logFile);
@@ -49,7 +49,7 @@ class AlertServiceTest extends SapphireTest {
 		$project = $this->objFromFixture('DNProject', 'test-project');
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-uat');
 
-		$this->mockGateway->expects($this->once())
+		$this->gateway->expects($this->once())
 			->method('addOrModifyAlert')
 			->with('http://mysite-uat.com/dev/check/check', [
 				['name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com', 'cellphone' => '21123456', 'countrycode' => '64', 'countryiso' => 'NZ'],
@@ -57,8 +57,8 @@ class AlertServiceTest extends SapphireTest {
 			->will($this->returnValue(true));
 
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
-		$service->setGateway($this->mockGateway);
-		
+		$service->setGateway($this->gateway);
+
 		$result = $service->sync($environment, 'master', $this->log, $project);
 
 		$this->assertNotContains('Failed to configure alert "dev-check"', $this->log->content());
@@ -70,7 +70,7 @@ class AlertServiceTest extends SapphireTest {
 		$project = $this->objFromFixture('DNProject', 'test-project');
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
 
-		$this->mockGateway->expects($this->once())
+		$this->gateway->expects($this->once())
 			->method('addOrModifyAlert')
 			->with('http://mysite.com/dev/check/health', [
 				['name' => 'Joe Bloggs <joe@email.com>', 'email' => 'joe@email.com', 'cellphone' => '21123456', 'countrycode' => '64', 'countryiso' => 'NZ'],
@@ -80,7 +80,7 @@ class AlertServiceTest extends SapphireTest {
 			->will($this->returnValue(true));
 
 		$service = Injector::inst()->create('SpyAlertServiceGoodConfig');
-		$service->setGateway($this->mockGateway);
+		$service->setGateway($this->gateway);
 
 		$result = $service->sync($environment, 'master', $this->log, $project);
 
@@ -94,7 +94,7 @@ class AlertServiceTest extends SapphireTest {
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
 
 		$service = Injector::inst()->create('TestAlertService');
-		$service->setGateway($this->mockGateway);
+		$service->setGateway($this->gateway);
 
 		$result = $service->sync($environment, 'master', $this->log, $project);
 
@@ -107,7 +107,7 @@ class AlertServiceTest extends SapphireTest {
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
 
 		$service = Injector::inst()->create('SpyAlertServiceMissingAlerts');
-		$service->setGateway($this->mockGateway);
+		$service->setGateway($this->gateway);
 
 		$result = $service->sync($environment, 'master', $this->log, $project);
 
@@ -120,7 +120,7 @@ class AlertServiceTest extends SapphireTest {
 		$environment = $this->objFromFixture('DNEnvironment', 'test-environment-prod');
 
 		$service = Injector::inst()->create('SpyAlertServiceMalformedConfig');
-		$service->setGateway($this->mockGateway);
+		$service->setGateway($this->gateway);
 
 		$result = $service->sync($environment, 'master', $this->log, $project);
 
@@ -134,10 +134,6 @@ class TestAlertService extends AlertService {
 
 	public function getAlertsConfigContent($project, $sha) {
 		return null;
-	}
-
-	public function setGateway($gateway) {
-		$this->gateway = $gateway;
 	}
 
 }

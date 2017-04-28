@@ -1,6 +1,0 @@
----
-name: deploynaut-notifications
----
-PingdomGateway:
-  dependencies:
-    pingdom: %$PingdomService
