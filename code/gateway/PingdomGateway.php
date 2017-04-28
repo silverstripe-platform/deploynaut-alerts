@@ -3,16 +3,27 @@
 class PingdomGateway extends Object {
 
 	/**
-	 * @var array
-	 */
-	public static $dependencies = [
-		'pingdom' => '%$PingdomService',
-	];
-
-	/**
 	 * @var \Acquia\Pingdom\PingdomApi
 	 */
-	public $pingdom;
+	protected $client;
+
+	/**
+	 * @config
+	 * @var string
+	 */
+	protected $username;
+
+	/**
+	 * @config
+	 * @var string
+	 */
+	protected $password;
+
+	/**
+	 * @config
+	 * @var string
+	 */
+	protected $key;
 
 	/**
 	 * @var string
@@ -29,13 +40,28 @@ class PingdomGateway extends Object {
 	 */
 	protected $contactCache = [];
 
+	public function getClient() {
+		if ($this->client === null) {
+			$this->client = new \Acquia\Pingdom\PingdomApi(
+				$this->config()->username,
+				$this->config()->password,
+				$this->config()->key
+			);
+		}
+		return $this->client;
+	}
+
+	public function setClient($client) {
+		$this->client = $client;
+	}
+
 	/**
 	 * @param bool $cached - use the in-memory cache
 	 * @return array|string
 	 */
 	public function getNotificationContacts($cached = true) {
 		if(!$this->contactCache) {
-			$this->contactCache = $this->pingdom->getNotificationContacts();
+			$this->contactCache = $this->getClient()->getNotificationContacts();
 		}
 		return $this->contactCache;
 	}
@@ -94,11 +120,11 @@ class PingdomGateway extends Object {
 		$updateId = null;
 		foreach($existingContacts as $existingContact) {
 			if($existingContact->email == $contact['email']) {
-				return $this->pingdom->modifyNotificationContact($existingContact->id, $contact);
+				return $this->getClient()->modifyNotificationContact($existingContact->id, $contact);
 			}
 		}
 
-		return $this->pingdom->addNotificationContact($contact);
+		return $this->getClient()->addNotificationContact($contact);
 	}
 
 	/**
@@ -109,7 +135,7 @@ class PingdomGateway extends Object {
 		$existingContacts = $this->getNotificationContacts();
 		foreach($existingContacts as $existingContact) {
 			if($existingContact->email == $email) {
-				return $this->pingdom->removeNotificationContact($existingContact->id);
+				return $this->getClient()->removeNotificationContact($existingContact->id);
 			}
 		}
 		return false;
@@ -120,7 +146,7 @@ class PingdomGateway extends Object {
 	 */
 	public function getChecks() {
 		// get all checks, max value of 25000 checks should be good enough for a long time...
-		return $this->pingdom->getChecks(25000);
+		return $this->getClient()->getChecks(25000);
 	}
 
 	/**
@@ -128,7 +154,7 @@ class PingdomGateway extends Object {
 	 * @return stdClass
 	 */
 	public function getCheck($id) {
-		return $this->pingdom->getCheck($id);
+		return $this->getClient()->getCheck($id);
 	}
 
 	/**
@@ -137,7 +163,7 @@ class PingdomGateway extends Object {
 	 * @return string
 	 */
 	public function modifyCheck($checkId, $parameters) {
-		return $this->pingdom->modifyCheck($checkId, $parameters);
+		return $this->getClient()->modifyCheck($checkId, $parameters);
 	}
 
 	/**
@@ -253,7 +279,7 @@ class PingdomGateway extends Object {
 					unset($contactParams['status']);
 					unset($contactParams['id']);
 
-					$newContact = $this->pingdom->addNotificationContact($contactParams);
+					$newContact = $this->getClient()->addNotificationContact($contactParams);
 					$contactIds[] = $newContact->id;
 					continue;
 				}
@@ -267,16 +293,16 @@ class PingdomGateway extends Object {
 						$contactParams = $contact;
 						unset($contactParams['status']);
 						unset($contactParams['id']);
-						$this->pingdom->modifyNotificationContact($contact['id'], $contactParams);
+						$this->getClient()->modifyNotificationContact($contact['id'], $contactParams);
 						$contactIds[] = $contact['id'];
 						break;
 					case "remove":
-						$this->pingdom->removeNotificationContact($contact['id']);
+						$this->getClient()->removeNotificationContact($contact['id']);
 						break;
 				}
 			}
 			$params['contactids'] = implode(',',$contactIds);
-			$this->pingdom->modifyCheck($existingCheck->id, $params);
+			$this->getClient()->modifyCheck($existingCheck->id, $params);
 			return true;
 		}
 
@@ -286,13 +312,13 @@ class PingdomGateway extends Object {
 			$contactParams = $contact;
 			unset($contactParams['status']);
 			unset($contactParams['id']);
-			$newContact = $this->pingdom->addNotificationContact($contactParams);
+			$newContact = $this->getClient()->addNotificationContact($contactParams);
 			$contactIds[] = $newContact->id;
 		}
 		$params['contactids'] = implode(',', $contactIds);
 		$params['name'] = $params['url'];
 		$params['type'] = 'http';
-		$this->pingdom->addCheck($params);
+		$this->getClient()->addCheck($params);
 		return true;
 	}
 
@@ -335,7 +361,7 @@ class PingdomGateway extends Object {
 			if($check->hostname != $params['host']) {
 				continue;
 			}
-			$detailedCheck = $this->pingdom->getCheck($check->id);
+			$detailedCheck = $this->getClient()->getCheck($check->id);
 			$existingUrl = $this->getCheckURL($detailedCheck);
 			// we found an existing check
 			if($existingUrl == $url) {

@@ -9,6 +9,15 @@ class AlertService {
 	];
 
 	/**
+	 * @var PingdomGateway
+	 */
+	public $gateway;
+
+	public function setGateway($gateway) {
+		$this->gateway = $gateway;
+	}
+
+	/**
 	 * Output the raw content of the .alerts.yml file from HEAD of a bare repository.
 	 * @param DNProject $project
 	 * @param string $sha

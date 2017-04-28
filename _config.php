@@ -16,5 +16,6 @@ if(!defined('PINGDOM_API_KEY')) {
 	throw new RuntimeException('You must set PINGDOM_API_KEY in _ss_environment.php');
 }
 
-$api = new \Acquia\Pingdom\PingdomApi(PINGDOM_USERNAME, PINGDOM_PASSWORD, PINGDOM_API_KEY);
-Injector::inst()->registerService($api, 'PingdomService');
+Config::inst()->update('PingdomGateway', 'username', PINGDOM_USERNAME);
+Config::inst()->update('PingdomGateway', 'password', PINGDOM_PASSWORD);
+Config::inst()->update('PingdomGateway', 'key', PINGDOM_API_KEY);
