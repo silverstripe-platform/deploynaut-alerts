@@ -39,10 +39,15 @@ class SyncPingdomAlertsTask extends BuildTask
 
         foreach ($projects as $project) {
             $this->ensureTeamRolesAreContacts($project);
-            if ($project->isPublic()) {
-                $this->ensureUnpausedAlert($project);
+            $prodEnv = $project->Environments()->filter(
+                'Usage', DNEnvironment::PRODUCTION
+            )->first();
+            if ($prodEnv && $prodEnv->isPublic) {
+                $this->ensureUnpausedAlert($prodEnv);
+                $this->log(sprintf('%s alert is now unpaused.', $prodEnv->URL));
             } else {
-                $this->ensurePausedAlert($project);
+                $this->ensurePausedAlert($prodEnv);
+                $this->log(sprintf('%s alert is paused.', $prodEnv->URL));
             }
         }
 
@@ -50,26 +55,42 @@ class SyncPingdomAlertsTask extends BuildTask
     }
 
     /**
-     * @param DNProject $project
+     * @param DNEnvironment $environment
      */
-    public function ensureUnpausedAlert($project)
+    public function ensureUnpausedAlert($environment)
     {
-        $alert = $project->Alert;
-        if (!$alert) {
-            $alert = $this->createAndSyncAlert($project);
-        }
+        $alertID = $environment->UptimeAlertID ?: $this->createAndSyncAlert($environment);
 
-        $checkID = $alert->PingdomID;
-        if ($checkID) {
-            $pingdomAlert = $this->gateway->getCheck($checkID);
-            if ($pingdomAlert->paused) {
-                try {
-                    $this->gateway->modifyCheck($checkID, ['paused' => 'false']);
-                } catch (\Exception $e) {
-                    $this->log(sprintf('Unpausing alert %s failed.', $checkID));
-                    $this->log($e->getMessage());
-                }
-            }
+        if (!$alertID) {
+            $this->log('Unable to get Alert ID. Skipping Unpause.');
+
+            return false;
+        }
+        try {
+            $this->gateway->unpauseCheck($alertID);
+        } catch (\Exception $e) {
+            $this->log(sprintf('Unpausing alert %s failed.', $alertID));
+            $this->log($e->getMessage());
+        }
+    }
+
+    /**
+     * @param DNEnvironment $environment
+     */
+    public function ensurePausedAlert($environment)
+    {
+        $alertID = $environment->UptimeAlertID ?: $this->createAndSyncAlert($environment);
+
+        if (!$alertID) {
+            $this->log('Unable to get Alert ID. Skipping Pause.');
+
+            return false;
+        }
+        try {
+            $this->gateway->pauseCheck($alertID);
+        } catch (\Exception $e) {
+            $this->log(sprintf('Pausing alert %s failed.', $alertID));
+            $this->log($e->getMessage());
         }
     }
 
@@ -117,13 +138,33 @@ class SyncPingdomAlertsTask extends BuildTask
      */
     public function createAndSyncAlert($environment, $paused = false)
     {
-        $alert = Alert::create($environment);
         try {
-            $response = $this->gateway->addOrModifyAlert($alert->URL, $alert->AlertContacts()->toArray(), 5, $paused);
+            $checkID = $this->gateway->addOrModifyAlert($environment->URL, $this->mapContactsForPingdom($environment), 5, $paused, [Config::inst()->get('Alert', 'default_tag')]);
         } catch (\Exception $e) {
-            $this->log(sprintf('Updating alert %s failed.', $alert->Name));
+            $this->log($this->gateway->getLastError());
+            $this->log(sprintf('Updating alert for %s failed.', $environment->Name));
             $this->log($e->getMessage());
+
+            return null;
         }
+        $environment->UptimeAlertID = $checkID;
+        $environment->write();
+
+        return $checkID;
+    }
+
+    protected function mapContactsForPingdom($environment)
+    {
+        $contactsArray = [];
+        $contacts = $environment->Project()->AlertContacts();
+        foreach ($contacts as $contact) {
+            $contactsArray[$contact->ID] = [
+                'name' => $contact->Name,
+                'email' => $contact->Email,
+            ];
+        }
+
+        return $contactsArray;
     }
 
     /**

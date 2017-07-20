@@ -21,3 +21,5 @@ DNEnvironment:
 Member:
   extensions:
     - AlertsMemberExtension
+Alert:
+  default_tag: 'PLAYPEN'

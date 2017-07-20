@@ -2,7 +2,7 @@
 
 class DNEnvironmentAlertsExtension extends DataExtension
 {
-    private static $has_one = [
-        'Alert' => 'Alert',
+    private static $db = [
+        'UptimeAlertID' => 'Varchar(255)',
     ];
 }
