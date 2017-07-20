@@ -5,11 +5,11 @@
 	"repositories": [
 		{
 			"type": "vcs",
-			"url": "git@github.com:silverstripe-archive/pingdom-api.git"
+			"url": "git@github.com:andrewandante/pingdom-api.git"
 		}
 	],
 	"require": {
-		"acquia/pingdom-api": "notification-contacts-dev",
+		"acquia/pingdom-api": "experiments/uptime_alerts-dev",
 		"symfony/yaml": "2.7.*@dev"
 	},
 	"extra": {
