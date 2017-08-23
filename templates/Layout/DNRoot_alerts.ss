@@ -2,11 +2,6 @@
 	<div class="row">
 		<div class="col-md-9">
 			<% include Breadcrumb %>
-
-			<ul class="nav nav-tabs">
-				<li class="active"><a href="$CurrentProject.Link/alerts">Overview</a></li>
-				<li><a href="$CurrentProject.Link/approvealert">Alert approval form</a></li>
-			</ul>
 		</div>
 	</div>
 </div>
@@ -38,16 +33,15 @@
 alerts:
   dev-check:
     check_url: "dev/check"
-    environment: "prod"
+    environment: "production"
     contacts:
       - "joe@email.com"
   health-check:
     check_url: "dev/health"
-    environment: "prod"
+    environment: "uat"
     contacts:
       - "joe@email.com"
       - "jane@email.com"
-      - "ops"
 </pre>
 
 
@@ -71,26 +65,10 @@ alerts:
 		<% loop $CurrentProject.AlertContacts %>
 			<li>$Email</li>
 		<% end_loop %>
-		<li>ops</li>
 	</ul>
 
 	<p>
 		Please raise a <a href="http://helpdesk.silverstripe.com">helpdesk</a> ticket and advise us which email addresses should receive notifications.
-	</p>
-
-	<h3>Using "ops" as a contact</h3>
-
-	<p>
-		This is a special case so that developers can alert SilverStripe Operations Team when a check fails. This means
-		if the alert is received by ops, they will look into the problem when the alert is received. This should be used
-		<strong>only</strong> for critical checks that concern the uptime of the site.
-	</p>
-
-	<p>
-		In order to use the ops contact and have it be effective, the check needs to be approved by the SilverStripe
-		Operations Team. If you commit the check and deploy it, the check will be created but be paused by default. In
-		order to get it started, please submit a new request to the
-		<a href="$CurrentProject.Link(approvealert)">alert approval form</a>.
 	</p>
 
 </div>
