@@ -13,8 +13,9 @@ class AlertsDeploymentExtension extends Extension {
 	 * @param string $sha
 	 * @param DeploynautLogFile $log
 	 * @param DNProject $project
+	 * @param array $options
 	 */
-	public function deployEnd($environment, $sha, $log, $project) {
+	public function deployEnd($environment, $sha, $log, $project, $options) {
 		$this->alertService->sync($environment, $sha, $log, $project);
 	}
 
