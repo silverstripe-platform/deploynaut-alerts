@@ -1,5 +1,5 @@
 <?php
-class AlertServiceTest extends SapphireTest {
+class AlertServiceTest extends DeploynautTest {
 
 	protected $log = null;
 
