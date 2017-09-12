@@ -12,6 +12,6 @@ DNRoot:
 DNProject:
   extensions:
     - DNProjectAlertsExtension
-CapistranoDeploymentBackend:
+CapistranoBackend:
   extensions:
     - AlertsDeploymentExtension
