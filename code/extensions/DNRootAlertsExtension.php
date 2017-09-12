@@ -11,14 +11,10 @@ class DNRootAlertsExtension extends Extension {
 		'alertService' => '%$AlertService'
 	];
 
-	public function getCurrentProject() {
-		return $this->owner->DNProjectList()->filter('Name', $this->owner->getRequest()->latestParam('Project'))->first();
-	}
-
 	public function alerts(SS_HTTPRequest $request) {
 		$this->owner->setCurrentActionType(self::ACTION_ALERT);
 
-		$project = $this->getCurrentProject();
+		$project = $this->owner->getCurrentProject();
 		if(!$project) {
 			return new SS_HTTPResponse("Project '" . Convert::raw2xml($request->latestParam('Project')) . "' not found.", 404);
 		}
@@ -30,7 +26,7 @@ class DNRootAlertsExtension extends Extension {
 	}
 
 	public function AlertsConfigContent($sha) {
-		return $this->alertService->getAlertsConfigContent($this->getCurrentProject(), $sha);
+		return $this->alertService->getAlertsConfigContent($this->owner->getCurrentProject(), $sha);
 	}
 
 }
