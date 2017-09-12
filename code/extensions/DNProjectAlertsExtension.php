@@ -20,9 +20,9 @@ class DNProjectAlertsExtension extends DataExtension {
 		$actionType = $controller->getField('CurrentActionType');
 
 		$list->push(new ArrayData([
-			'Link' => $this->owner->Link('alerts'),
+			'Link' => $this->owner->Link(DNRootAlertsExtension::ACTION_ALERT),
 			'Title' => 'Alerts',
-			'IsCurrent' => $this->owner->isSection() && $controller->getAction() == 'alerts',
+			'IsCurrent' => $this->owner->isSection() && $controller->getAction() == DNRootAlertsExtension::ACTION_ALERT,
 			'IsSection' => $this->owner->isSection() && $actionType == DNRootAlertsExtension::ACTION_ALERT
 		]));
 	}

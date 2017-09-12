@@ -53,7 +53,7 @@ alerts:
 
 	<ul>
 		<% loop $CurrentProject.DNEnvironmentList %>
-			<li>$Name</li>
+			<li>$Code</li>
 		<% end_loop %>
 	</ul>
 

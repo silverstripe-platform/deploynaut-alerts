@@ -5,7 +5,7 @@ class DNRootAlertsExtension extends Extension {
 		'alerts',
 	];
 
-	const ACTION_ALERT = 'alert';
+	const ACTION_ALERT = 'alerts';
 
 	private static $dependencies = [
 		'alertService' => '%$AlertService'
