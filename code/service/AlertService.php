@@ -71,14 +71,14 @@ class AlertService {
 			if(!$valid) continue;
 
 			// the alert has an environment that matches the environment we're deploying to now. Configure the alerts.
-			if($alertConfig['environment'] == $environment->Name) {
+			if($alertConfig['environment'] == $environment->Code) {
 				$log->write(sprintf('Configuring alert "%s" from .alerts.yml', $alertName));
 			} else {
 				$log->write(sprintf(
 					'Failed to configure alert "%s" for environment "%s". Does not apply to this environment ("%s")',
 					$alertName,
 					$alertConfig['environment'],
-					$environment->Name
+					$environment->Code
 				));
 
 				// skip to the next alert in the configuration
@@ -197,7 +197,7 @@ class AlertService {
 		}
 
 		// validate the environment specified in the alert actually exists
-		if(!DNEnvironment::get()->filter('Name', $config['environment'])->first()) {
+		if(!DNEnvironment::get()->filter('Code', $config['environment'])->first()) {
 			$log->write(sprintf(
 				'WARNING: Failed to configure alert "%s". Invalid environment "%s" in .alerts.yml. Skipped.',
 				$name,
