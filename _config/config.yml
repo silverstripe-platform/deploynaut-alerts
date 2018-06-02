@@ -15,3 +15,11 @@ DNProject:
 CapistranoBackend:
   extensions:
     - AlertsDeploymentExtension
+DNEnvironment:
+  extensions:
+    - DNEnvironmentAlertsExtension
+Member:
+  extensions:
+    - AlertsMemberExtension
+Alert:
+  default_tag: 'PLAYPEN'
